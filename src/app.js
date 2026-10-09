@@ -31,6 +31,16 @@ const soundPlayer = createSoundPlayer({
 let view = "home";
 let advanceTimer = null;
 const CELEBRATION_MS = 950;
+const celebrationAnimals = ["rabbit", "fox", "cat", "dog", "hedgehog", "lion", "owl", "bear", "penguin"];
+let celebrationAnimal = null;
+let previousCelebrationAnimal = null;
+
+function chooseCelebrationAnimal() {
+  const choices = celebrationAnimals.filter((animal) => animal !== previousCelebrationAnimal);
+  const animal = choices[Math.floor(Math.random() * choices.length)];
+  previousCelebrationAnimal = animal;
+  return animal;
+}
 
 function cancelAdvance() {
   window.clearTimeout(advanceTimer);
@@ -212,15 +222,20 @@ function renderResult() {
   setView("result");
   const won = round.status === "won";
   const missed = round.questions[round.index].target;
+  if (won && !celebrationAnimal) celebrationAnimal = chooseCelebrationAnimal();
   document.title = `${won ? "Wonderful reading!" : "Try another adventure"} · Curiouser`;
   main.innerHTML = `
-    <section class="result" aria-labelledby="result-title">
-      <div class="result-art">${picture(won ? "trophy" : "rabbit")}${won ? '<span class="result-spark one" aria-hidden="true">✦</span><span class="result-spark two" aria-hidden="true">✧</span>' : ""}</div>
-      <span class="eyebrow">${won ? "ADVENTURE COMPLETE" : "GAME OVER · ANOTHER TRY AWAITS"}</span>
-      <h1 id="result-title" tabindex="-1">${won ? "Wonderfully done!" : "Let’s give it another go."}</h1>
+    <section class="result ${won ? "result-won" : ""}" aria-labelledby="result-title">
+      ${won ? `<div class="animal-celebration">
+        <h1 id="result-title" class="animal-speech" tabindex="-1">Well Done!</h1>
+        <div class="animal-entrance">${picture(celebrationAnimal, "celebration-animal", `A friendly ${celebrationAnimal} celebrating your reading`)}<span class="animal-shadow" aria-hidden="true"></span></div>
+        <span class="celebration-star star-left" aria-hidden="true">✦</span><span class="celebration-star star-right" aria-hidden="true">✧</span>
+      </div>` : `<div class="result-art">${picture("rabbit")}</div>`}
+      <span class="eyebrow">${won ? "ALL 10 WORDS FOUND!" : "GAME OVER · ANOTHER TRY AWAITS"}</span>
+      ${!won ? '<h1 id="result-title" tabindex="-1">Let’s give it another go.</h1>' : ""}
       <p>${won ? "A whole little adventure, one word at a time." : "Every little try helps your reading grow."}</p>
       <div class="result-stats"><div><strong>${round.correct}<span> / ${round.questions.length}</span></strong><span>words found</span></div><div>${heartMarkup()}<span>hearts remaining</span></div></div>
-      ${!won ? `<div class="missed-word">${picture(missed.id, "", missed.word)}<span>This picture matches <strong class="reading-font">${missed.word}</strong>.</span></div>` : '<p class="result-cheer">The White Rabbit thinks you’re brilliant.</p>'}
+      ${!won ? `<div class="missed-word">${picture(missed.id, "", missed.word)}<span>This picture matches <strong class="reading-font">${missed.word}</strong>.</span></div>` : '<p class="result-cheer">Another adventure, another surprise friend!</p>'}
       <div class="result-actions"><button type="button" class="button primary" data-action="again">${won ? "Play again" : "Try again"} ${icon("play")}</button><a class="button secondary" href="#phonics">Choose a term</a></div>
       <a class="text-button" href="#">Back to all adventures</a>
     </section>`;
@@ -230,6 +245,7 @@ function renderResult() {
 function startRound() {
   cancelAdvance();
   soundPlayer.stop();
+  celebrationAnimal = null;
   round = createRound(getBank("year1", term));
   // Preload just this round's pictures rather than the entire collection.
   new Set(

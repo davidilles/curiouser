@@ -131,7 +131,7 @@ GitHub Pages republishes the selected branch automatically. Wait for the deploym
 3. Read the word and tap the matching picture. Keyboard users can Tab to a picture and press Enter/Space, or press 1–4.
 4. A correct answer earns one word. The picture gives a little celebratory bounce and sparkle, then the next word appears automatically after about one second. There is no Next button and no time limit for answering.
 5. Each different wrong picture costs one heart. The same wrong picture cannot cost a second heart.
-6. Three lost hearts ends the game and shows the matching picture and word. A round finishes successfully after ten correct words.
+6. Three lost hearts ends the game and shows the matching picture and word. A round finishes successfully after ten correct words. A random animal bounces in with a “Well Done!” speech bubble; consecutive wins reveal different animals. Reduced-motion preferences show the celebration without animation.
 7. **Play again** starts a fresh shuffled round with three hearts. **Choose a term** returns to setup.
 
 Sound starts off and can be enabled using the header's sound button. Correct answers play a soft, sparkling music-box flourish; wrong answers play two gentle bubble pops. Feedback never speaks the answer. A browser that cannot play sound can still play the game. Leaving or refreshing a round resets it; there are no saved profiles or scores.
@@ -197,3 +197,7 @@ npm run test:browser
 ```
 
 On Linux, Playwright may need system browser libraries (`npx playwright install-deps chromium webkit`, with administrator permission on your own machine). The browser suite starts the local server if needed. It includes audio checks in Chromium and WebKit with an iPhone viewport; this is not a physical-device audio test. These tools are only for development: visitors and GitHub Pages do not need Node or Playwright.
+
+## Preview version
+
+The footer displays `v1.1.1`. Bump the version in `package.json`, the root entries in `package-lock.json`, and the visible label and accessible label in `index.html` whenever publishing a changed preview. Keep the same version when promoting that reviewed build to GitHub.

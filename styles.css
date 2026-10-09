@@ -2311,3 +2311,122 @@ body[data-view="game"] .game-feedback p {
     display: none;
   }
 }
+
+/* A surprise friend greets each completed round. */
+.result-won { overflow: hidden; }
+.animal-celebration {
+  position: relative;
+  width: min(100%, 340px);
+  margin: 0 auto 22px;
+  padding-top: 4px;
+}
+.result .animal-speech {
+  position: relative;
+  z-index: 1;
+  display: table;
+  margin: 0 auto 20px;
+  padding: 14px 26px;
+  border: 2px solid #d8a948;
+  border-radius: 28px;
+  background: #fff5d9;
+  color: var(--ink);
+  font-size: clamp(32px, 7vw, 46px);
+  line-height: 1.15;
+  box-shadow: 0 5px 0 #e7cf8b55;
+  animation: animal-message 450ms 700ms both;
+}
+.animal-speech::after {
+  content: "";
+  position: absolute;
+  bottom: -9px;
+  left: calc(50% - 9px);
+  width: 16px;
+  height: 16px;
+  background: #fff5d9;
+  border-right: 2px solid #d8a948;
+  border-bottom: 2px solid #d8a948;
+  transform: rotate(45deg);
+}
+.animal-entrance {
+  position: relative;
+  width: 190px;
+  margin: auto;
+  animation: animal-arrival 1100ms both;
+  transform-origin: center bottom;
+}
+.celebration-animal {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 190px;
+  height: 190px;
+  object-fit: contain;
+}
+.animal-shadow {
+  display: block;
+  width: 125px;
+  height: 13px;
+  margin: -9px auto 0;
+  border-radius: 50%;
+  background: #dce3d5;
+}
+.celebration-star {
+  position: absolute;
+  color: #c19742;
+  font-size: 38px;
+  animation: animal-message 500ms 850ms both;
+}
+.star-left { left: 8px; top: 48%; transform: rotate(-12deg); }
+.star-right { right: 8px; top: 64%; transform: rotate(12deg); }
+@keyframes animal-arrival {
+  0% { transform: translateY(65vh) scale(.8); }
+  45% { transform: translateY(-28px) scale(1.03); }
+  62% { transform: translateY(0) scale(1.08, .92); }
+  78% { transform: translateY(-15px) scale(.98, 1.03); }
+  90% { transform: translateY(0) scale(1.03, .97); }
+  100% { transform: translateY(0) scale(1); }
+}
+@keyframes animal-message {
+  from { opacity: 0; scale: .8; }
+  to { opacity: 1; scale: 1; }
+}
+@media (max-height: 700px) {
+  .animal-entrance, .celebration-animal { width: 140px; }
+  .celebration-animal { height: 140px; }
+  .animal-celebration { margin-bottom: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animal-entrance, .animal-speech, .celebration-star { animation: none !important; }
+}
+
+/* Three columns keep the version at the exact centre at every screen size. */
+.site-footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 12px;
+  min-height: 65px;
+  padding: 8px 0;
+  text-align: left;
+}
+.site-footer > span {
+  max-width: none;
+  min-width: 0;
+  justify-self: start;
+}
+.site-footer > button {
+  min-width: 0;
+  justify-self: end;
+  text-align: right;
+  padding: 8px 0;
+}
+.site-version {
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+@media (max-width: 480px) {
+  .site-footer { gap: 8px; }
+  .site-footer .footer-spark { margin-right: 3px; }
+}

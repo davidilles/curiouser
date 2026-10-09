@@ -53,6 +53,7 @@ test("home, term selection and every term render without broken assets or overfl
 test("three incorrect pictures end the round, replay restores hearts, and all correct answers win", async ({
   page,
 }) => {
+  test.setTimeout(60000);
   await start(page);
   const word = await page.locator(".target-word").textContent();
   const wrong = await page
@@ -83,15 +84,32 @@ test("three incorrect pictures end the round, replay restores hearts, and all co
       await expect(page.getByText(`Word ${i + 2} of 10`)).toBeVisible();
     else
       await expect(
-        page.getByRole("heading", { name: "Wonderfully done!" }),
+        page.getByRole("heading", { name: "Well Done!" }),
       ).toBeVisible();
   }
   await expect(
-    page.getByRole("heading", { name: "Wonderfully done!" }),
+    page.getByRole("heading", { name: "Well Done!" }),
   ).toBeVisible();
   await expect(page.locator(".result-stats")).toContainText("10 / 10");
+  await expect(page.locator(".celebration-animal")).toBeVisible();
+  await expect.poll(() => page.locator(".celebration-animal").evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
+  const firstAnimal = await page.locator(".celebration-animal").getAttribute("src");
+  await page.locator(".animal-entrance").evaluate(async (element) => {
+    await Promise.all(element.getAnimations().map((animation) => animation.finished));
+  });
+  await page.screenshot({ path: `test-results/celebration-${page.viewportSize().width}.png`, fullPage: true });
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.getByRole("button", { name: "Play again" }).click();
   await expect(page.getByText("Word 1 of 10")).toBeVisible();
+  for (let i = 0; i < 10; i++) {
+    const target = await page.locator(".target-word").textContent();
+    await page.locator(`[data-answer="${target}"]`).click();
+    if (i < 9) await expect(page.getByText(`Word ${i + 2} of 10`)).toBeVisible();
+    else await expect(page.getByRole("heading", { name: "Well Done!" })).toBeVisible();
+  }
+  expect(await page.locator(".celebration-animal").getAttribute("src")).not.toBe(firstAnimal);
+  expect(await page.locator(".animal-entrance").evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 test("keyboard play, guide focus, sound toggle and history navigation work", async ({
