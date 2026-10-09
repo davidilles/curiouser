@@ -2,6 +2,8 @@ import { TERMS, LEVELS, getBank } from "./words.js";
 import { createRound, answer, nextQuestion } from "./game.js";
 import { createSoundPlayer } from "./audio.js";
 import { BUILD_TERMS, getBuildBank, createBuildRound, selectPart, removePart, checkBuild, nextBuildQuestion } from "./build-word.js";
+import { wordPicture } from "./pictures.js";
+import { CELEBRATION_FRIENDS, chooseCelebrationFriend, celebrationStyle } from "./celebration.js";
 
 const main = document.querySelector("#main");
 const dialog = document.querySelector("#grownups-dialog");
@@ -35,14 +37,12 @@ const soundPlayer = createSoundPlayer({
 let view = "home";
 let advanceTimer = null;
 const CELEBRATION_MS = 950;
-const celebrationAnimals = ["rabbit", "fox", "cat", "dog", "hedgehog", "lion", "owl", "bear", "penguin"];
 let celebrationAnimal = null;
 let previousCelebrationAnimal = null;
 
 function chooseCelebrationAnimal() {
-  const choices = celebrationAnimals.filter((animal) => animal !== previousCelebrationAnimal);
-  const animal = choices[Math.floor(Math.random() * choices.length)];
-  previousCelebrationAnimal = animal;
+  const animal = chooseCelebrationFriend(previousCelebrationAnimal);
+  previousCelebrationAnimal = animal.id;
   return animal;
 }
 
@@ -117,7 +117,6 @@ function renderHome() {
         <p>Follow your curiosity.<br>There’s a little adventure in every game.</p>
       </div>
       <div class="welcome-art">
-        <span class="art-note">wonder starts here</span>
         <span class="floating-suit suit-one" aria-hidden="true">✦</span>
         <img class="reading-friends" src="./assets/reading-friends-alice.png" width="500" height="360" alt="A little fox and white rabbit reading Alice in Wonderland together">
         <span class="floating-suit suit-two" aria-hidden="true">♢</span>
@@ -224,7 +223,7 @@ function renderGame() {
           const incorrect = round.tried.includes(option.id);
           const correct = answered && option.id === question.target.id;
           return `<button class="picture-option option-${index} ${incorrect ? "incorrect" : ""} ${correct ? "correct" : ""}" type="button" data-answer="${option.id}" aria-label="${option.word}${incorrect ? ", already tried" : ""}" ${incorrect || answered ? "disabled" : ""}>
-          <img src="${option.image}" alt="" width="160" height="160" draggable="false">
+          ${wordPicture(option)}
           <span class="choice-marker" aria-hidden="true">${incorrect ? icon("close") : correct ? icon("check") : index + 1}</span>
           ${correct ? '<span class="success-sparkles" aria-hidden="true"><span>✦</span><span>✧</span><span>✦</span></span>' : ""}
         </button>`;
@@ -233,6 +232,25 @@ function renderGame() {
       <div class="game-feedback ${answered ? "success" : wrong ? "try-again" : ""}"><p id="feedback" tabindex="-1">${answered ? '<span aria-hidden="true">✦</span> ' : ""}${feedback}</p>
       <span class="keyboard-tip">You can also use the 1, 2, 3 and 4 keys.</span></div>
     </section>`;
+}
+
+const pieceLabel = (text) => text.replace("_", "…");
+
+function buildSlots(question, answered) {
+  const tileAt = (i) => question.tiles.find((tile) => tile.id === round.selected[i]);
+  const slot = (i, text = tileAt(i)?.text) => text
+    ? `<button type="button" class="word-slot filled" data-remove="${i}" aria-label="Remove ${pieceLabel(tileAt(i).text)} from position ${i + 1}" ${answered ? "disabled" : ""}>${pieceLabel(text)}</button>`
+    : `<span class="word-slot empty" aria-label="Empty position ${i + 1}"><span aria-hidden="true">·</span></span>`;
+  let result = "";
+  for (let i = 0; i < question.target.parts.length; i++) {
+    const tile = tileAt(i);
+    if (tile?.text.includes("_") && i + 1 < question.target.parts.length) {
+      const [start, end] = tile.text.split("_");
+      result += `<span class="split-frame" role="group" aria-label="Linked ${pieceLabel(tile.text)} piece">${slot(i, start)}${slot(i + 1)}${slot(i, end)}</span>`;
+      i++;
+    } else result += slot(i);
+  }
+  return result;
 }
 
 function renderBuildGame() {
@@ -250,15 +268,11 @@ function renderBuildGame() {
     <section class="play-area build-area" aria-labelledby="build-title">
       <div class="round-topline"><span class="round-count">Word <strong>${round.index + 1}</strong> of ${round.questions.length}</span>${heartMarkup()}</div>
       <div class="progress-track" role="progressbar" aria-label="Words built" aria-valuemin="0" aria-valuemax="${round.questions.length}" aria-valuenow="${round.correct}"><span style="width:${round.correct / round.questions.length * 100}%"></span></div>
-      <div class="build-prompt"><h1 id="build-title" tabindex="-1">Build this word</h1><img src="${question.target.image}" alt="${question.target.word}" width="160" height="160" draggable="false"></div>
+      <div class="build-prompt"><h1 id="build-title" tabindex="-1">Build this word</h1>${wordPicture(question.target, question.target.word)}</div>
       <div class="build-workspace">
-        <div class="word-slots ${answered ? "built-correct" : ""}" role="group" aria-label="Your word">${question.target.parts.map((_, i) => {
-          const tile = question.tiles.find((tile) => tile.id === round.selected[i]);
-          return tile ? `<button type="button" class="word-slot filled" data-remove="${i}" aria-label="Remove ${tile.text} from position ${i + 1}" ${answered ? "disabled" : ""}>${tile.text}</button>`
-            : `<span class="word-slot empty" aria-label="Empty position ${i + 1}"><span aria-hidden="true">·</span></span>`;
-        }).join("")}</div>
-        <p class="build-hint">Tap a piece above to put it back.</p>
-        <div class="part-tray" role="group" aria-label="Word parts">${question.tiles.map((tile) => `<button type="button" class="part-tile" data-part="${tile.id}" aria-label="Add ${tile.text}" ${round.selected.includes(tile.id) || answered || full ? "disabled" : ""}>${tile.text}</button>`).join("")}</div>
+        <div class="word-slots ${answered ? "built-correct" : ""}" role="group" aria-label="Your word">${buildSlots(question, answered)}</div>
+        <p class="build-hint">${question.target.parts.some((part) => part.includes("_")) ? "Linked letters are one piece. " : ""}Tap a piece above to put it back.</p>
+        <div class="part-tray" role="group" aria-label="Word parts">${question.tiles.map((tile) => `<button type="button" class="part-tile ${tile.text.includes("_") ? "linked-piece" : ""}" data-part="${tile.id}" data-piece="${tile.text}" aria-label="Add ${pieceLabel(tile.text)}" ${round.selected.includes(tile.id) || answered || full ? "disabled" : ""}>${pieceLabel(tile.text)}</button>`).join("")}</div>
       </div>
       <div class="build-bottom">
         <p id="feedback" class="build-feedback ${answered ? "success" : ""}" tabindex="-1">${feedback}</p>
@@ -303,16 +317,16 @@ function renderResult() {
   document.title = `${won ? "Wonderful reading!" : "Try another adventure"} · Curiouser`;
   main.innerHTML = `
     <section class="result ${won ? "result-won" : ""}" aria-labelledby="result-title">
-      ${won ? `<div class="animal-celebration">
+      ${won ? `<div class="animal-celebration ${celebrationAnimal.special ? "wonderland-visit" : ""}">
         <h1 id="result-title" class="animal-speech" tabindex="-1">Well Done!</h1>
-        <div class="animal-entrance"><span class="celebration-animal friend-${celebrationAnimal}" data-animal="${celebrationAnimal}" role="img" aria-label="A friendly ${celebrationAnimal} celebrating, with its whole body visible"></span><span class="animal-shadow" aria-hidden="true"></span></div>
+        <div class="animal-entrance"><span class="celebration-animal" style="${celebrationStyle(celebrationAnimal)}" data-animal="${celebrationAnimal.id}" data-special="${celebrationAnimal.special}" role="img" aria-label="${celebrationAnimal.name}, celebrating with its whole body visible"></span><span class="animal-shadow" aria-hidden="true"></span></div>
         <span class="celebration-star star-left" aria-hidden="true">✦</span><span class="celebration-star star-right" aria-hidden="true">✧</span>
       </div>` : `<div class="result-art">${picture("rabbit")}</div>`}
       <span class="eyebrow">${won ? "ALL 10 WORDS FOUND!" : "GAME OVER · ANOTHER TRY AWAITS"}</span>
       ${!won ? '<h1 id="result-title" tabindex="-1">Let’s give it another go.</h1>' : ""}
       <p>${won ? (gameType === "building" ? "A splendid collection of words. The Hatter is delighted!" : "A whole little adventure, one word at a time.") : "Every little try helps your reading grow."}</p>
       <div class="result-stats"><div><strong>${round.correct}<span> / ${round.questions.length}</span></strong><span>words found</span></div><div>${heartMarkup()}<span>hearts remaining</span></div></div>
-      ${!won ? `<div class="missed-word">${picture(missed.id, "", missed.word)}<span>${gameType === "building" ? "This word is" : "This picture matches"} <strong class="reading-font">${missed.word}</strong>.</span></div>` : '<p class="result-cheer">Another adventure, another surprise friend!</p>'}
+      ${!won ? `<div class="missed-word">${wordPicture(missed, missed.word)}<span>${gameType === "building" ? "This word is" : "This picture matches"} <strong class="reading-font">${missed.word}</strong>.</span></div>` : `<p class="result-cheer">${celebrationAnimal.special ? `${celebrationAnimal.name[0].toUpperCase() + celebrationAnimal.name.slice(1)} came to say well done!` : "Another adventure, another surprise friend!"}</p>`}
       <div class="result-actions"><button type="button" class="button primary" data-action="again">${won ? "Play again" : "Try again"} ${icon("play")}</button><a class="button secondary" href="${setupHash()}">Choose a term</a></div>
       <a class="text-button" href="#">Back to all adventures</a>
     </section>`;
@@ -324,8 +338,10 @@ function startRound() {
   soundPlayer.stop();
   celebrationAnimal = null;
   // Load the full-body friend sheet while the child plays the round.
-  const friends = new Image();
-  friends.src = "./assets/celebration/full-body-friends.png";
+  new Set(CELEBRATION_FRIENDS.map((friend) => friend.image)).forEach((src) => {
+    const friends = new Image();
+    friends.src = src;
+  });
   round = gameType === "building" ? createBuildRound(term) : createRound(getBank("year1", term));
   // Preload just this round's pictures rather than the entire collection.
   new Set(

@@ -77,7 +77,10 @@ curiouser/                       ← repository root
 │   ├── audio.js
 │   ├── build-word.js
 │   ├── game.js
-│   └── words.js
+│   ├── words.js
+│   ├── word-data.js
+│   ├── pictures.js
+│   └── celebration.js
 └── assets/
     ├── reading-friends-alice.png
     ├── celebration/             ← full-body animal celebration artwork
@@ -121,7 +124,7 @@ GitHub Pages republishes the selected branch automatically. Wait for the deploym
 - **404:** confirm the Pages source is `main` and `/ (root)`, check that the deployment succeeded, and ensure `index.html` is at the repository root. Include `/curiouser/` in a project site's URL.
 - **Only the README appears:** the `index.html` file is missing or in a nested folder.
 - **Missing pictures or fonts:** upload the entire `assets` folder with the same names, case and subfolders. The images are bundled locally; no image-hosting service is involved.
-- **The game does not open:** make sure `src/app.js`, `src/audio.js`, `src/game.js` and `src/words.js` are present. Do not open the site as a `file://` URL.
+- **The game does not open:** make sure `src/app.js`, `src/audio.js`, `src/game.js`, `src/words.js`, `src/word-data.js`, `src/pictures.js` and `src/celebration.js` are present. Do not open the site as a `file://` URL.
 - **No sound:** sound starts off. Tap the speaker; a short confirmation chime should play. Turn up the phone's media volume and check whether audio is going to connected headphones. If a sound error appears, check that both files in `assets/sounds` were uploaded and try the speaker again. After updating an older deployment, reload the page to load the new sound code.
 - **Changes have not appeared:** check the latest Pages deployment in **Actions**, then refresh without using the cached page.
 - **No Pages option:** confirm you are in the repository's Settings, have permission to manage it, and that your account/repository supports Pages. Public repositories are the straightforward option on GitHub Free.
@@ -133,7 +136,7 @@ GitHub Pages republishes the selected branch automatically. Wait for the deploym
 3. Read the word and tap the matching picture. Keyboard users can Tab to a picture and press Enter/Space, or press 1–4.
 4. A correct answer earns one word. The picture gives a little celebratory bounce and sparkle, then the next word appears automatically after about one second. There is no Next button and no time limit for answering.
 5. Each different wrong picture costs one heart. The same wrong picture cannot cost a second heart.
-6. Three lost hearts ends the game and shows the matching picture and word. A round finishes successfully after ten correct words. A random full-body storybook animal bounces in with a “Well Done!” speech bubble; consecutive wins reveal different animals. Reduced-motion preferences show the celebration without animation.
+6. Three lost hearts ends the game and shows the matching picture and word. A round finishes successfully after ten correct words. One of 18 full-body storybook friends bounces in with a “Well Done!” speech bubble; consecutive wins reveal different animals. The Cheshire Cat, White Rabbit, Caterpillar, Dormouse and Dodo share a 20% chance per win, with the 13 regular animals sharing the remaining 80%. Reduced-motion preferences show the celebration without animation.
 7. **Play again** starts a fresh shuffled round with three hearts. **Choose a term** returns to setup.
 
 Sound starts off and can be enabled using the header's sound button. Correct answers play a soft, sparkling music-box flourish; wrong answers play two gentle bubble pops. Feedback never speaks the answer. A browser that cannot play sound can still play the game. Leaving or refreshing a round resets it; there are no saved profiles or scores.
@@ -144,22 +147,22 @@ During play, the word, hearts and four pictures fit into the visible browser hei
 
 ## Word collection and term suitability
 
-There are **189 distinct words**, with an individual picture for each.
+Both games share **237 distinct words**, with a matching picture and curated building pieces for every entry. The shared catalogue is `src/word-data.js`; see [the coverage checklist](PHONICS-COVERAGE.md).
 
 | Year 1 term | Available words | Added this term | Practice focus                                                                                                     |
 | ----------- | --------------: | --------------: | ------------------------------------------------------------------------------------------------------------------ |
-| Autumn      |              81 |              81 | Revise simple words, digraphs and consonant blends; introduce early alternatives such as `ou`.                     |
-| Spring      |             122 |              41 | Split digraphs (`cake`, `bike`), alternative spellings (`leaf`, `key`) and further vowel patterns.                 |
-| Summer      |             189 |              67 | Further alternative spellings (`bread`, `pear`), inflections, compound words and words with two or more syllables. |
+| Autumn      |              88 |              88 | Revise simple words, digraphs and consonant blends; introduce early alternatives such as `ou`.                     |
+| Spring      |             146 |              58 | Split digraphs (`cake`, `bike`), alternative spellings (`leaf`, `key`) and further vowel patterns.                 |
+| Summer      |             237 |              91 | Further alternative spellings (`bread`, `pear`), inflections, compound words and words with two or more syllables. |
 
-Spring and Summer include earlier words for revision. Each of those rounds selects **six words introduced in the selected term and four revision words**. Autumn selects ten words from its own set. Targets never repeat within a round; pictures and correct-answer positions are shuffled. Related alternatives that could be ambiguous, such as `hat`/`cap` and `boat`/`ship`, are kept away from each other when one is the target.
+Spring and Summer include earlier words for revision. Each of those rounds selects **six words introduced in the selected term and four revision words**. Autumn selects ten words from its own set. Targets never repeat within a round. Selection favours different primary spelling focuses, without retaining child history. Pictures and correct-answer positions are shuffled; one similarly spelt distractor is included when a visually unambiguous one is available. Related alternatives that could be ambiguous, such as `hat`/`cap` and `boat`/`ship`, are kept away from each other when one is the target.
 
 These are **broad practice bands, not an official term-by-term curriculum or an assessment**. They use English spellings and a progression informed by [Letters and Sounds](https://www.gov.uk/government/publications/letters-and-sounds). Its phases are a useful reference, not a guarantee of an individual school's current sequence. Schools use different programmes and year-group names across the UK. Spring/Summer sets also revisit earlier sounds; some alternative pronunciations and longer words may need adult support. Choose an earlier term or tailor the bank to match what the child has actually been taught.
 
-All words are visible in [`src/words.js`](src/words.js). To tailor the game:
+All words, building pieces and primary practice focuses are visible in [`src/word-data.js`](src/word-data.js). To tailor the game:
 
-1. Move a word between `NEW_WORDS.autumn`, `.spring` and `.summer`; later banks are assembled automatically.
-2. To add a word, add its name to one of those lists and place a clearly matching PNG at `assets/pictures/WORD.png`.
+1. Move an entry between `entries.autumn`, `.spring` and `.summer` in `src/word-data.js`; both games and later revision banks update together.
+2. Add `word|pieces|primary-focus` to the appropriate term, with spaces between pieces. Use `a_e` for a linked piece that surrounds the next piece. Add an optional fourth field `syllables`, `compound` or `ending` when appropriate. Supply a matching local PNG or a reviewed sprite viewport.
 3. Keep words unique across the three new-word lists. Keep at least ten Autumn words and six new words in each later term for full rounds.
 4. Add easily confused pairs to `relatedPictures`; retain at least three suitable distractors for every target.
 5. Run the checks below. Record the source and licence of any new artwork in `ASSETS.md`.
@@ -173,7 +176,10 @@ Screen readers receive descriptive picture-button labels. This supports nonvisua
 - `src/app.js`: home, term choice, game rendering and navigation.
 - `src/audio.js`: tap-triggered sound playback, muting and failure handling.
 - `src/game.js`: independent round, answer and heart rules.
-- `src/words.js`: word sets, term descriptions and picture mappings.
+- `src/word-data.js`: the shared vocabulary, curated pieces, primary focuses and sprite viewports.
+- `src/words.js`: cumulative term banks, descriptions and related-picture exclusions.
+- `src/pictures.js`: responsive picture viewports.
+- `src/celebration.js`: regular and rarer Wonderland friends.
 - `assets/`: locally bundled artwork and fonts; see `ASSETS.md` for attribution.
 - `scripts/serve.js`: dependency-free local development server.
 - `tests/`: game-rule and browser checks.
@@ -202,10 +208,10 @@ On Linux, Playwright may need system browser libraries (`npx playwright install-
 
 ## Preview version
 
-The footer displays `v1.2.3`. Bump the version in `package.json`, the root entries in `package-lock.json`, and the visible label and accessible label in `index.html` whenever publishing a changed preview. Keep the same version when promoting that reviewed build to GitHub.
+The footer displays `v1.3.0`. Bump the version in `package.json`, the root entries in `package-lock.json`, and the visible label and accessible label in `index.html` whenever publishing a changed preview. Keep the same version when promoting that reviewed build to GitHub.
 
 ## The Hatter’s Word Workshop
 
 The second adventure, **The Hatter’s Word Workshop**, is at `#build-word`. Its top hat, 10/6 ticket and tea cup tie the word-building puzzles to the Mad Hatter’s tea party. Pick a term, identify the picture, and tap the parts in order. Tap a placed piece to return it, or use the amber **Reset word** button to clear the slots. Filling the final slot automatically checks the word: correct words chime and advance, while incorrect words pop and clear the slots for another try. Each distinct incorrect word costs one heart; repeating the same mistake still resets the word without an additional penalty. Completing ten words reveals the same random animal celebration as the reading game.
 
-The curated bank in `src/build-word.js` contains 24 Autumn words, 16 additional Spring words and 16 additional Summer words (56 total). Later rounds mix six current-term words with four revision words. Short words use contiguous sound chunks; compounds use meaningful parts. The sets are practice bands, not a prescribed curriculum. Autumn includes two unused pieces; later terms include three. All artwork is bundled locally. Like the reading game, descriptive image labels reveal the picture name to screen-reader users.
+Both adventures use exactly the same 237-word catalogue: 88 Autumn words, 58 additional Spring words and 91 additional Summer words. Later rounds mix six current-term words with four revision words. Short words use sound/spelling pieces; a linked split-digraph piece such as `a_e` places its two letters around the next piece, so `c`, `a_e`, `k` displays and checks as **cake**. Longer words can use syllable, compound or root-and-ending pieces. Single-sound words such as **ear** have one piece. The sets are practice bands, not a prescribed curriculum. Autumn includes two unused pieces; later terms include three. Letter pieces are at least 56×56px on phones, with a larger amber reset button. All artwork is bundled locally. Like the reading game, descriptive image labels reveal the picture name to screen-reader users.

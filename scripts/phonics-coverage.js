@@ -1,0 +1,16 @@
+import { writeFileSync } from 'node:fs';
+import { getBank, NEW_WORDS } from '../src/words.js';
+
+const bank = getBank('year1', 'summer');
+const groups = new Map();
+for (const word of bank) {
+  if (!groups.has(word.focus)) groups.set(word.focus, []);
+  groups.get(word.focus).push(word.word);
+}
+const rows = [...groups].sort(([a], [b]) => a.localeCompare(b))
+  .map(([focus, words]) => `| ${focus} | ${words.length} | ${words.join(', ')} |`).join('\n');
+const counts = ['autumn', 'spring', 'summer'].map(term =>
+  `| ${term[0].toUpperCase() + term.slice(1)} | ${NEW_WORDS[term].length} | ${getBank('year1', term).length} |`).join('\n');
+const text = `# Phonics content coverage\n\nBoth games share **${bank.length} words** from \`src/word-data.js\`. This is a content checklist, not a child assessment or a claim of complete curriculum coverage. Rebuild this file with \`node scripts/phonics-coverage.js\`.\n\n| Practice band | Added | Available in each game |\n| --- | ---: | ---: |\n${counts}\n\n## How to read the checklist\n\nEach entry has one primary practice focus, used to keep rounds varied. A word can contain additional sounds and spellings beyond that focus. Labels such as **ea-leaf / ea-bread**, **oo-moon / oo-book** and **ow-cow / ow-snow** distinguish pronunciations. These labels describe content, not a validated teaching sequence. Accent differences apply, notably to words such as grass, statue and stew.\n\nShort-word pieces generally follow graphemes, including linked split digraphs (c + a_e + k → cake). Some longer words use spelling syllables, compound parts or roots and endings. Single-sound words such as ear and eye have one piece. Every entry's pieces are checked to rebuild its complete written word.\n\n## Primary practice focuses\n\n| Focus | Words | Included words |\n| --- | ---: | --- |\n${rows}\n\n## Educational scope and remaining gaps\n\nThe reference is England's [Year 1 English programme](https://www.gov.uk/government/publications/national-curriculum-in-england-english-programmes-of-study/national-curriculum-in-england-english-programmes-of-study) and [English Appendix 1: spelling](https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/239784/English_Appendix_1_-_Spelling.pdf). They specify skills and patterns, not one prescribed word list for every term. These broad bands are not mapped to an individual school's phonics programme. Some inherited words and new illustrated extensions contain more advanced spellings; choose a comfortable band with adult support.\n\nThe expansion adds explicit practice for igh, ue, ew, ay, oy, oe, au, are, ore, stressed er and ie as in field, alongside plural -s/-es and -ing actions. It is not a complete Year 1 reading or spelling course. There is no dedicated e–e set, systematic -ed/-er/-est or un- practice, common-exception-word programme, contractions, sentence reading or reading-aloud assessment. Isolated existing words may contain these letters without exercising those rules.\n\nNo profiles, attainment judgements, mistake logging or timing are introduced. Pattern balancing applies only to the randomly chosen content in the current round.\n`;
+writeFileSync(new URL('../PHONICS-COVERAGE.md', import.meta.url), text);
+console.log(`Coverage checklist: ${bank.length} shared words, ${groups.size} primary focuses.`);

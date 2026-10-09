@@ -26,9 +26,9 @@ test("home, term selection and every term render without broken assets or overfl
   await expect(
     page.getByRole("heading", { name: "A term for every adventure." }),
   ).toBeVisible();
-  await expect(page.getByText("81 words to explore")).toBeVisible();
-  await expect(page.getByText("122 words to explore")).toBeVisible();
-  await expect(page.getByText("189 words to explore")).toBeVisible();
+  await expect(page.getByText("88 words to explore")).toBeVisible();
+  await expect(page.getByText("146 words to explore")).toBeVisible();
+  await expect(page.getByText("237 words to explore")).toBeVisible();
   for (const term of ["autumn", "spring", "summer"]) {
     await start(page, term);
     await expect(page.locator(".picture-option")).toHaveCount(4);
@@ -92,7 +92,7 @@ test("three incorrect pictures end the round, replay restores hearts, and all co
   ).toBeVisible();
   await expect(page.locator(".result-stats")).toContainText("10 / 10");
   await expect(page.locator(".celebration-animal")).toBeVisible();
-  await expect(page.locator(".celebration-animal")).toHaveCSS("background-image", /full-body-friends/);
+  await expect(page.locator(".celebration-animal")).toHaveCSS("background-image", /(full-body-friends|more-friends)/);
   const firstAnimal = await page.locator(".celebration-animal").getAttribute("data-animal");
   await page.locator(".animal-entrance").evaluate(async (element) => {
     await Promise.all(element.getAnimations().map((animation) => animation.finished));

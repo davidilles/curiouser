@@ -3,6 +3,9 @@ import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { getBuildBank, createBuildRound, selectPart, removePart, assembledWord, checkBuild, nextBuildQuestion } from "../src/build-word.js";
 
+import { getBank } from "../src/words.js";
+import { joinPieces } from "../src/word-data.js";
+
 function solve(round) {
   for (const part of round.questions[round.index].target.parts) {
     const tile = round.questions[round.index].tiles.find((tile) => tile.text === part && !round.selected.includes(tile.id));
@@ -10,17 +13,30 @@ function solve(round) {
   }
   return round;
 }
-test("all 56 curated words rebuild correctly and have bundled pictures", () => {
-  assert.equal(getBuildBank("summer").length, 56);
+test("all 237 shared words rebuild correctly and have bundled pictures", () => {
+  assert.equal(getBuildBank("summer").length, 237);
   for (const term of ["autumn", "spring", "summer"]) {
     const bank = getBuildBank(term);
+    assert.equal(bank, getBank("year1", term));
     assert.equal(new Set(bank.map((w) => w.id)).size, bank.length);
     for (const word of bank) {
-      assert.equal(word.parts.join(""), word.word);
+      assert.equal(joinPieces(word.parts), word.word);
+      assert.ok(word.focus && word.parts.length, word.word);
       assert.ok(existsSync(new URL(`../${word.image}`, import.meta.url)), word.word);
     }
   }
   assert.throws(() => getBuildBank("winter"));
+});
+test("linked vowel pieces assemble in spelling order and preserve following endings", () => {
+  for (const [word, pieces] of [
+    ["cake", ["c", "a_e", "k"]],
+    ["bike", ["b", "i_e", "k"]],
+    ["grapes", ["g", "r", "a_e", "p", "s"]],
+    ["flute", ["f", "l", "u_e", "t"]],
+  ]) assert.equal(joinPieces(pieces), word);
+  assert.notEqual(joinPieces(["c", "k", "a_e"]), "cake");
+  assert.notEqual(joinPieces(["c", "a_e"]), "cake");
+  assert.notEqual(joinPieces(["a_e", "i_e", "k"]), "cake");
 });
 test("each round has ten unique targets, a revision mix and two or three extra pieces", () => {
   for (const [stage, term] of ["autumn", "spring", "summer"].entries()) {
@@ -83,6 +99,7 @@ test("ten built words win; replay starts with fresh hearts and no selected parts
 });
 test("three distinct incorrect words end the round and block further input", () => {
   let round = createBuildRound("autumn");
+  round.questions.sort((a, b) => b.target.parts.length - a.target.parts.length);
   const tiles = round.questions[0].tiles;
   const size = round.questions[0].target.parts.length;
   for (let offset = 0; offset < tiles.length && round.status === "playing"; offset++) {

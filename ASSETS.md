@@ -62,3 +62,15 @@ Prompt:
 ```text
 Edit this existing transparent children's-book illustration for the Curiouser phonics website. Keep the same fox and white rabbit, their poses, full bodies, expressive faces, painterly soft texture, green book, framing and transparent background. Change ONLY the outward-facing front book cover (the right-hand green cover as seen by the viewer): add the clearly legible title 'Alice in Wonderland' in three centered lines, elegant large cream-gold storybook serif letters, following the perspective of the cover. A tiny gold key ornament beneath is optional only if there is room. Make the exact words Alice in Wonderland large and readable at normal website hero size. No other words. Keep the animals and their anatomy and edges intact, no new characters, no border, no opaque background. This is an edit to the supplied image, not a redesign.
 ```
+
+
+## Expanded vocabulary and celebration friends (v1.3.0)
+
+Created with the **built-in OpenAI image-generation tool**, using the existing vocabulary icons and celebration atlas as style references. The original generated PNGs are preserved without pixel edits. Exact prompts, cell mappings and generation observations are in [`assets/phonics-art-prompts.md`](assets/phonics-art-prompts.md).
+
+- `assets/pictures/phonics-1.png`: 16 new vowel-pattern pictures.
+- `assets/pictures/phonics-2.png`: 16 further spelling-pattern pictures.
+- `assets/pictures/phonics-3.png`: 8 plural pictures and 8 actions.
+- `assets/celebration/more-friends.png`: White Rabbit with pocket watch, Caterpillar, Dormouse, Dodo, squirrel, panda, tortoise, otter and fawn.
+
+Each sheet is an RGBA PNG, 1254×1254, with genuine transparency. Vocabulary sheets use four rows and four columns. `src/word-data.js` records measured SVG viewports around individual illustrations, preserving complete subjects where their edges extend beyond a nominal cell. The nine celebration friends use a three-by-three CSS sprite sheet. Some generated illustrations use tighter margins than requested; the White Rabbit's ear reaches the top of its source cell. No picture files are fetched from another server while playing.

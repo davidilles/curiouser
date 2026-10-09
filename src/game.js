@@ -10,6 +10,40 @@ export function shuffle(items, random = Math.random) {
   return result;
 }
 
+// Spread a round across practice focuses without retaining any child history.
+function variedWords(pool, count, random, used) {
+  const remaining = shuffle(pool, random);
+  const result = [];
+  while (remaining.length && result.length < count) {
+    const frequency = (word) => used.get(word.focus ?? "general") ?? 0;
+    const minimum = Math.min(...remaining.map(frequency));
+    const index = remaining.findIndex((word) => frequency(word) === minimum);
+    const [word] = remaining.splice(index, 1);
+    result.push(word);
+    used.set(word.focus ?? "general", frequency(word) + 1);
+  }
+  return result;
+}
+
+function spellingDistance(a, b) {
+  let row = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    const next = [i];
+    for (let j = 1; j <= b.length; j++)
+      next[j] = Math.min(next[j - 1] + 1, row[j] + 1, row[j - 1] + (a[i - 1] !== b[j - 1]));
+    row = next;
+  }
+  return row[b.length];
+}
+
+function pictureDistractors(bank, target, random) {
+  const candidates = shuffle(bank.filter((word) => word.id !== target.id && !target.related?.includes(word.id)), random);
+  // One fair, similarly spelt alternative rewards reading the whole word.
+  // Remaining choices stay varied; all must be visually unambiguous.
+  const close = candidates.find((word) => spellingDistance(word.word, target.word) === 1);
+  return close ? [close, ...candidates.filter((word) => word !== close).slice(0, 2)] : candidates.slice(0, 3);
+}
+
 export function createRound(bank, random = Math.random) {
   if (
     bank.length < 4 ||
@@ -20,27 +54,22 @@ export function createRound(bank, random = Math.random) {
   const newestStage = Math.max(...bank.map((item) => item.stage ?? 0));
   const newWords = bank.filter((item) => (item.stage ?? 0) === newestStage);
   const revision = bank.filter((item) => (item.stage ?? 0) < newestStage);
+  const used = new Map();
   const selected = revision.length
     ? shuffle(
         [
-          ...shuffle(newWords, random).slice(0, 6),
-          ...shuffle(revision, random).slice(0, 4),
+          ...variedWords(newWords, 6, random, used),
+          ...variedWords(revision, 4, random, used),
         ],
         random,
       )
-    : shuffle(bank, random).slice(0, ROUND_LENGTH);
+    : variedWords(bank, ROUND_LENGTH, random, used);
   const questions = selected.map((target) => ({
     target,
     options: shuffle(
       [
         target,
-        ...shuffle(
-          bank.filter(
-            (item) =>
-              item.id !== target.id && !target.related?.includes(item.id),
-          ),
-          random,
-        ).slice(0, 3),
+        ...pictureDistractors(bank, target, random),
       ],
       random,
     ),

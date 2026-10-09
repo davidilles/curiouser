@@ -4,9 +4,9 @@ import { existsSync } from "node:fs";
 import { WORD_BANKS, NEW_WORDS, getBank } from "../src/words.js";
 import { createRound, answer, nextQuestion } from "../src/game.js";
 
-test("all 189 words are unique, have pictures, and only appear from their intended term onward", () => {
+test("all 237 words are unique, have pictures, and only appear from their intended term onward", () => {
   const words = Object.values(NEW_WORDS).flat();
-  assert.equal(words.length, 189);
+  assert.equal(words.length, 237);
   assert.equal(new Set(words).size, words.length);
   const terms = ["autumn", "spring", "summer"];
   terms.forEach((term, stage) => {
@@ -37,6 +37,8 @@ test("rounds have ten unique words, four unambiguous choices, and a balanced rev
         10,
       );
       const stage = Math.max(...bank.map((item) => item.stage));
+      const newest = round.questions.filter(({ target }) => target.stage === stage);
+      assert.equal(new Set(newest.map(({ target }) => target.focus)).size, newest.length);
       if (stage > 0)
         assert.equal(
           round.questions.filter((item) => item.target.stage === stage).length,
