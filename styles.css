@@ -926,9 +926,12 @@ button {
   background: #e9eef4;
   border-bottom-color: #d3dfe9;
 }
-.picture-option:not(:disabled):hover {
-  transform: translateY(-4px);
-  border-color: #a3b697;
+/* Touch browsers can keep :hover active after a tap and into the next word. */
+@media (hover: hover) and (pointer: fine) {
+  .picture-option:not(:disabled):hover {
+    transform: translateY(-4px);
+    border-color: #a3b697;
+  }
 }
 .picture-option:not(:disabled):active {
   transform: translateY(0);
@@ -1974,7 +1977,6 @@ dialog h3 {
   }
 }
 @media (hover: none) {
-  .picture-option:not(:disabled):hover,
   .term-card:hover {
     transform: none;
   }

@@ -202,7 +202,7 @@ On Linux, Playwright may need system browser libraries (`npx playwright install-
 
 ## Preview version
 
-The footer displays `v1.2.2`. Bump the version in `package.json`, the root entries in `package-lock.json`, and the visible label and accessible label in `index.html` whenever publishing a changed preview. Keep the same version when promoting that reviewed build to GitHub.
+The footer displays `v1.2.3`. Bump the version in `package.json`, the root entries in `package-lock.json`, and the visible label and accessible label in `index.html` whenever publishing a changed preview. Keep the same version when promoting that reviewed build to GitHub.
 
 ## The Hatter’s Word Workshop
 
