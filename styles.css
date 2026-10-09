@@ -215,6 +215,30 @@ button {
   width: 20px;
   height: 20px;
 }
+.sound-notice:not([hidden]) {
+  position: fixed;
+  z-index: 20;
+  top: 64px;
+  right: 16px;
+  width: min(360px, calc(100% - 32px));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 8px 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fffef8;
+  box-shadow: 0 8px 24px #283e3a22;
+}
+.sound-notice p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+.sound-notice button {
+  flex: 0 0 44px;
+  min-height: 44px;
+  font-size: 26px;
+}
 .eyebrow {
   font-size: 12px;
   line-height: 1.6;

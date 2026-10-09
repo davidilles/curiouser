@@ -13,6 +13,7 @@ const mime = {
   ".png": "image/png",
   ".webp": "image/webp",
   ".woff2": "font/woff2",
+  ".wav": "audio/wav",
 };
 http
   .createServer(async (req, res) => {

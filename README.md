@@ -57,7 +57,7 @@ These commands assume a fresh local folder with no Git repository. If you have a
 #### Option B: upload in your browser
 
 1. In your empty GitHub repository, select **uploading an existing file**. Once files exist, the option is **Add file → Upload files**.
-2. Upload `index.html`, `styles.css`, `README.md` and `ASSETS.md` at the repository root. Upload the **`src` folder** and **`assets/fonts` folder**, preserving those paths, and put `reading-friends.png` inside **`assets`**.
+2. Upload `index.html`, `styles.css`, `README.md` and `ASSETS.md` at the repository root. Upload the **`src` folder**, **`assets/fonts` folder** and **`assets/sounds` folder**, preserving those paths, and put `reading-friends.png` inside **`assets`**.
 3. Upload every PNG in `assets/pictures`, plus its `sources.json` and `LICENSE.txt`. GitHub allows **up to 100 files per upload**, so upload the picture collection in several batches. Navigate into `assets/pictures` before each batch; the files must end up there, not at the repository root. To create that folder first, use **Add file → Create new file**, enter `assets/pictures/.gitkeep` as the filename, and commit it.
 4. Commit each upload to **`main`**, with a message such as “Add Curiouser pictures”.
 5. Add the hidden `.nojekyll` file at the root. If your file picker cannot show it, choose **Add file → Create new file**, type **`.nojekyll`** as the filename, enter a comment such as `Static website; no Jekyll build needed.`, and commit.
@@ -74,11 +74,13 @@ curiouser/                       ← repository root
 ├── .nojekyll
 ├── src/
 │   ├── app.js
+│   ├── audio.js
 │   ├── game.js
 │   └── words.js
 └── assets/
     ├── reading-friends.png
     ├── fonts/                   ← include font files AND their licences
+    ├── sounds/                  ← both WAV sound effects
     └── pictures/                ← include all pictures, sources and licence
 ```
 
@@ -117,7 +119,8 @@ GitHub Pages republishes the selected branch automatically. Wait for the deploym
 - **404:** confirm the Pages source is `main` and `/ (root)`, check that the deployment succeeded, and ensure `index.html` is at the repository root. Include `/curiouser/` in a project site's URL.
 - **Only the README appears:** the `index.html` file is missing or in a nested folder.
 - **Missing pictures or fonts:** upload the entire `assets` folder with the same names, case and subfolders. The images are bundled locally; no image-hosting service is involved.
-- **The game does not open:** make sure `src/app.js`, `src/game.js` and `src/words.js` are present. Do not open the site as a `file://` URL.
+- **The game does not open:** make sure `src/app.js`, `src/audio.js`, `src/game.js` and `src/words.js` are present. Do not open the site as a `file://` URL.
+- **No sound:** sound starts off. Tap the speaker; a short confirmation chime should play. Turn up the phone's media volume and check whether audio is going to connected headphones. If a sound error appears, check that both files in `assets/sounds` were uploaded and try the speaker again. After updating an older deployment, reload the page to load the new sound code.
 - **Changes have not appeared:** check the latest Pages deployment in **Actions**, then refresh without using the cached page.
 - **No Pages option:** confirm you are in the repository's Settings, have permission to manage it, and that your account/repository supports Pages. Public repositories are the straightforward option on GitHub Free.
 
@@ -131,7 +134,9 @@ GitHub Pages republishes the selected branch automatically. Wait for the deploym
 6. Three lost hearts ends the game and shows the matching picture and word. A round finishes successfully after ten correct words.
 7. **Play again** starts a fresh shuffled round with three hearts. **Choose a term** returns to setup.
 
-Sound starts off and can be enabled using the header's sound button. Feedback never speaks the answer. A browser that cannot play sound can still play the game. Leaving or refreshing a round resets it; there are no saved profiles or scores.
+Sound starts off and can be enabled using the header's sound button. Correct answers play a soft, sparkling music-box flourish; wrong answers play two gentle bubble pops. Feedback never speaks the answer. A browser that cannot play sound can still play the game. Leaving or refreshing a round resets it; there are no saved profiles or scores.
+
+Sound uses two tiny, locally bundled WAV files played through native HTML audio, directly from the speaker/answer tap. The speaker shows a loading state until playback starts. Failed playback resets it to off and shows a retry message; muting stops an effect immediately. This replaces the original Web Audio oscillator path, which could silently fail to resume on mobile browsers. iOS also treats Web Audio and HTML audio differently around the Ring/Silent switch ([WebKit explanation](https://bugs.webkit.org/show_bug.cgi?id=252746)). Headless tests verify media decoding, playback events and error recovery, but cannot verify the physical speaker, volume or audio route on an iPhone.
 
 During play, the word, hearts and four pictures fit into the visible browser height, including shorter phones and landscape screens, without page scrolling. Correct-answer feedback pauses while the grown-ups guide is open or the tab is hidden. Reduced-motion settings keep the success highlight and automatic progression but remove the bounce and sparkles.
 
@@ -163,7 +168,8 @@ Screen readers receive descriptive picture-button labels. This supports nonvisua
 
 - `index.html`: shared page shell, navigation and grown-ups guide.
 - `styles.css`: responsive storybook theme and all game screens.
-- `src/app.js`: home, term choice, game rendering, navigation and optional sound.
+- `src/app.js`: home, term choice, game rendering and navigation.
+- `src/audio.js`: tap-triggered sound playback, muting and failure handling.
 - `src/game.js`: independent round, answer and heart rules.
 - `src/words.js`: word sets, term descriptions and picture mappings.
 - `assets/`: locally bundled artwork and fonts; see `ASSETS.md` for attribution.
@@ -186,8 +192,8 @@ For browser checks, install the development dependency and browsers:
 
 ```sh
 npm ci
-npx playwright install chromium
+npx playwright install chromium webkit
 npm run test:browser
 ```
 
-On Linux, Playwright may need system browser libraries (`npx playwright install-deps chromium`, with administrator permission on your own machine). The browser suite starts the local server if needed. These tools are only for development: visitors and GitHub Pages do not need Node or Playwright.
+On Linux, Playwright may need system browser libraries (`npx playwright install-deps chromium webkit`, with administrator permission on your own machine). The browser suite starts the local server if needed. It includes audio checks in Chromium and WebKit with an iPhone viewport; this is not a physical-device audio test. These tools are only for development: visitors and GitHub Pages do not need Node or Playwright.

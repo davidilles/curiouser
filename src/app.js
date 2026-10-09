@@ -1,9 +1,11 @@
 import { TERMS, LEVELS, getBank } from "./words.js";
 import { createRound, answer, nextQuestion } from "./game.js";
+import { createSoundPlayer } from "./audio.js";
 
 const main = document.querySelector("#main");
 const dialog = document.querySelector("#grownups-dialog");
 const soundButton = document.querySelector("#sound-button");
+const soundNotice = document.querySelector("#sound-notice");
 const announcer = document.createElement("div");
 announcer.className = "sr-only";
 announcer.setAttribute("role", "status");
@@ -13,7 +15,19 @@ document.body.append(announcer);
 let term = "autumn";
 let round = null;
 let sound = false;
-let audio;
+const soundPlayer = createSoundPlayer({
+  onStateChange(enabled, pending) {
+    sound = enabled;
+    updateSoundButton(pending);
+  },
+  onError(error) {
+    soundNotice.hidden = false;
+    soundNotice.querySelector("p").textContent =
+      error?.name === "NotAllowedError"
+        ? "Sound couldn’t start. Tap the speaker to try again."
+        : "Sound couldn’t load. Check your connection, then tap the speaker to retry.";
+  },
+});
 let view = "home";
 let advanceTimer = null;
 const CELEBRATION_MS = 950;
@@ -215,6 +229,7 @@ function renderResult() {
 
 function startRound() {
   cancelAdvance();
+  soundPlayer.stop();
   round = createRound(getBank("year1", term));
   // Preload just this round's pictures rather than the entire collection.
   new Set(
@@ -234,7 +249,7 @@ function submitAnswer(id) {
   const updated = answer(round, id);
   if (updated === round) return;
   round = updated;
-  chime(round.lastAnswer === "correct");
+  soundPlayer.play(round.lastAnswer === "correct" ? "correct" : "incorrect");
   renderGame();
   if (round.status === "answered") {
     announce("Wonderful! You found it.");
@@ -265,6 +280,7 @@ function goNext() {
 
 function route() {
   cancelAdvance();
+  soundPlayer.stop();
   const hash = location.hash.slice(1);
   if (hash === "phonics") renderSetup();
   else if (/^play\/(autumn|spring|summer)$/.test(hash)) {
@@ -281,8 +297,10 @@ function showGuide() {
 }
 dialog.addEventListener("close", scheduleAdvance);
 document.addEventListener("visibilitychange", () => {
-  if (document.hidden) cancelAdvance();
-  else scheduleAdvance();
+  if (document.hidden) {
+    cancelAdvance();
+    soundPlayer.stop();
+  } else scheduleAdvance();
 });
 document.querySelector("#grownups-button").addEventListener("click", showGuide);
 document.querySelector("#footer-grownups").addEventListener("click", showGuide);
@@ -341,57 +359,30 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-function updateSoundButton() {
-  soundButton.innerHTML = icon(sound ? "volume" : "mute");
-  soundButton.setAttribute("aria-pressed", String(sound));
+function updateSoundButton(pending = false) {
+  soundButton.innerHTML = icon(sound && !pending ? "volume" : "mute");
+  soundButton.setAttribute("aria-pressed", String(sound && !pending));
+  soundButton.setAttribute("aria-busy", String(pending));
   soundButton.setAttribute(
     "aria-label",
-    sound ? "Turn sound off" : "Turn sound on",
+    pending
+      ? "Cancel sound loading"
+      : sound
+        ? "Turn sound off"
+        : "Turn sound on",
   );
-  soundButton.title = sound ? "Sound on" : "Sound off";
-}
-function chime(correct) {
-  if (!sound || !audio) return;
-  try {
-    void audio.resume().catch(() => {});
-    const time = audio.currentTime;
-    const notes = correct ? [523.25, 659.25, 783.99] : [329.63, 293.66];
-    notes.forEach((frequency, i) => {
-      const oscillator = audio.createOscillator();
-      const gain = audio.createGain();
-      oscillator.type = "sine";
-      oscillator.frequency.value = frequency;
-      const start = time + i * 0.11;
-      gain.gain.setValueAtTime(0, start);
-      gain.gain.linearRampToValueAtTime(0.06, start + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.25);
-      oscillator.connect(gain);
-      gain.connect(audio.destination);
-      oscillator.start(start);
-      oscillator.stop(start + 0.28);
-      oscillator.onended = () => {
-        oscillator.disconnect();
-        gain.disconnect();
-      };
-    });
-  } catch {
-    /* Sound is optional; a browser audio restriction must not interrupt play. */
-  }
+  soundButton.title = pending
+    ? "Starting sound…"
+    : sound
+      ? "Sound on"
+      : "Sound off";
 }
 soundButton.addEventListener("click", () => {
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext)
-    return announce(
-      "Sound is not available in this browser. You can still play.",
-    );
-  try {
-    audio ??= new AudioContext();
-    sound = !sound;
-    updateSoundButton();
-    if (sound) chime(true);
-  } catch {
-    announce("Sound is not available. You can still play.");
-  }
+  soundNotice.hidden = true;
+  soundPlayer.setEnabled(!soundPlayer.isEnabled());
+});
+soundNotice.querySelector("button").addEventListener("click", () => {
+  soundNotice.hidden = true;
 });
 
 window.addEventListener("hashchange", route);

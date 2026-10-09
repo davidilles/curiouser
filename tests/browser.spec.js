@@ -140,6 +140,7 @@ test("GitHub Pages repository subpaths load all screens and refresh directly int
     ".css": "text/css",
     ".png": "image/png",
     ".woff2": "font/woff2",
+    ".wav": "audio/wav",
   };
   await page.route("**/curiouser/**", async (route) => {
     const path =
@@ -161,6 +162,10 @@ test("GitHub Pages repository subpaths load all screens and refresh directly int
   await expect(page).toHaveURL(/\/curiouser\/#play\/autumn$/);
   await page.reload();
   await expect(page.locator(".target-word")).toBeVisible();
+  await page.getByRole("button", { name: "Turn sound on" }).click();
+  await expect(
+    page.getByRole("button", { name: "Turn sound off" }),
+  ).toHaveAttribute("aria-pressed", "true");
   await expect
     .poll(() =>
       page.evaluate(() =>
@@ -296,6 +301,7 @@ test("the whole game fits short phones, landscape screens and viewport resizing"
   // Leaving play restores normal scrolling for the menus.
   await page.setViewportSize({ width: 390, height: 664 });
   await page.getByRole("link", { name: "Choose a term" }).click();
+  await expect(page.locator("body")).toHaveAttribute("data-view", "setup");
   expect(
     await page.evaluate(
       () => getComputedStyle(document.documentElement).overflow,
@@ -306,9 +312,11 @@ test("the whole game fits short phones, landscape screens and viewport resizing"
 test("success feedback locks choices, pauses for the guide, and cancels when leaving", async ({
   page,
 }) => {
-  await page.clock.install();
+  const clockStart = new Date("2030-01-01T12:00:00Z");
+  await page.clock.install({ time: clockStart });
   await start(page);
-  await page.clock.pauseAt(new Date());
+  // Use a known future instant so a slow worker cannot move the clock backwards.
+  await page.clock.pauseAt(new Date(clockStart.getTime() + 60000));
   const word = await page.locator(".target-word").textContent();
   await page.locator(`[data-answer="${word}"]`).click();
   await expect(page.locator(".success-sparkles")).toBeVisible();

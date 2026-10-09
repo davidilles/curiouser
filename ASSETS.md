@@ -1,4 +1,4 @@
-# Curiouser artwork and fonts
+# Curiouser artwork, sounds and fonts
 
 All runtime assets are bundled locally. No font or picture CDN is contacted when someone plays.
 
@@ -33,3 +33,7 @@ Locally hosted Latin WOFF2 subsets of **Nunito**, **Andika** and **Fraunces** ar
 ## Interface artwork
 
 Simple interface symbols and the favicon are authored SVG geometry. Wonderland-inspired copy and card-suit motifs are original to this website, with no artwork taken from a film or other adaptation.
+
+## Sound effects
+
+`assets/sounds/correct.wav` and `incorrect.wav` are original synthesised effects created for Curiouser, with no third-party recordings or samples. Both are mono, 44.1 kHz, 16-bit PCM WAV files. The correct-answer sound is a soft, ascending music-box flourish (G5–B5–D6–G6) with quiet bell echoes; the retry sound is two mellow, pitch-bending bubble pops. Both have smooth attacks and fades. Rebuild them with `node scripts/make-sounds.js`. They are played using native HTML audio so the game does not depend on starting a Web Audio context on iOS.

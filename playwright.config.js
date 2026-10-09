@@ -11,6 +11,11 @@ export default defineConfig({
       name: "mobile",
       use: { ...devices["iPhone 13"], defaultBrowserType: "chromium" },
     },
+    {
+      name: "webkit-iphone",
+      testMatch: "**/audio.spec.js",
+      use: { ...devices["iPhone 13"] },
+    },
   ],
   webServer: {
     command: "npm start",
