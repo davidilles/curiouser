@@ -1,13 +1,13 @@
 {
   "name": "curiouser",
-  "version": "1.1.1",
+  "version": "1.2.2",
   "private": true,
   "type": "module",
   "description": "A little collection of browser games for growing minds.",
   "scripts": {
     "dev": "node scripts/serve.js",
     "start": "node scripts/serve.js",
-    "test": "node --test tests/game.test.js",
+    "test": "node --test tests/*.test.js",
     "test:browser": "playwright test"
   },
   "devDependencies": {

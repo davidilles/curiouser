@@ -37,3 +37,28 @@ Simple interface symbols and the favicon are authored SVG geometry. Wonderland-i
 ## Sound effects
 
 `assets/sounds/correct.wav` and `incorrect.wav` are original synthesised effects created for Curiouser, with no third-party recordings or samples. Both are mono, 44.1 kHz, 16-bit PCM WAV files. The correct-answer sound is a soft, ascending music-box flourish (G5–B5–D6–G6) with quiet bell echoes; the retry sound is two mellow, pitch-bending bubble pops. Both have smooth attacks and fades. Rebuild them with `node scripts/make-sounds.js`. They are played using native HTML audio so the game does not depend on starting a Web Audio context on iOS.
+
+
+## Full-body celebration friends (v1.2.2)
+
+`assets/celebration/full-body-friends.png` is original artwork made with the built-in OpenAI image-generation tool. The transparent 1254 × 1254 PNG has nine equal 418 × 418 cells: rabbit, fox, cat; puppy, hedgehog, lion; owl, bear cub, penguin. It is displayed as a CSS sprite sheet without changing the source image. Every animal is shown in full, with ears, paws/feet, wings and tails inside its cell. These drawings replace the small word-picture icons in the win celebration only.
+
+Generation brief: Create a transparent 3 × 3 sprite atlas of nine complete, cheerful storybook animals for Curiouser. Top row: white waistcoat rabbit, orange fox, lilac Cheshire-like smiling cat. Middle row: floppy-eared puppy, hedgehog, little lion. Bottom row: owl, bear cub, penguin. Soft painted children's-book style, full bodies and visible limbs, equal cells, one centred animal per cell, ample transparent margins, no text, labels, floor or backdrop.
+
+Final correction prompt:
+
+```text
+Edit target: the attached transparent 3x3 animal sprite atlas. Make ONE targeted correction: shrink every animal to 70% of its current size and recenter each within an exact equal 3x3 grid, restoring the top rabbit ear completely. Keep the same nine character identities, designs, order, cheerful poses, and soft children's storybook painted style. Preserve actual transparent alpha. Clean away ALL colored speckles and paint crumbs outside animal silhouettes.
+All nine full bodies must fit their own cell with generous empty transparent margins. Each silhouette including ears, tail, limbs, feet, feathers must occupy at most 70% of its cell width and height. Their center positions must be exactly 1/6, 1/2 and 5/6 of canvas width and height. The entire outer 10% of each cell must be absolutely empty transparent pixels. Complete rabbit ear tips, full fox and cat tails, paws, owl wings and feet must all remain visible. Exact equal cell grid is required for CSS background-size 300% and positions 0/50/100%.
+Keep order: top white waistcoat rabbit / orange fox / lilac Cheshire-like cat; middle floppy-eared puppy / hedgehog / little lion; bottom owl / bear cub / penguin. Full-body illustrations only, no heads or busts. Square PNG, preferably 1536x1536. No grid lines, no floor, no background, no text, no labels.
+```
+
+## Alice book illustration (v1.2.2)
+
+`assets/reading-friends-alice.png` is a transparent edit of the original reading-friends artwork, created with the built-in OpenAI image-generation tool. The original is retained. The fox and rabbit now read a book titled Alice in Wonderland.
+
+Prompt:
+
+```text
+Edit this existing transparent children's-book illustration for the Curiouser phonics website. Keep the same fox and white rabbit, their poses, full bodies, expressive faces, painterly soft texture, green book, framing and transparent background. Change ONLY the outward-facing front book cover (the right-hand green cover as seen by the viewer): add the clearly legible title 'Alice in Wonderland' in three centered lines, elegant large cream-gold storybook serif letters, following the perspective of the cover. A tiny gold key ornament beneath is optional only if there is room. Make the exact words Alice in Wonderland large and readable at normal website hero size. No other words. Keep the animals and their anatomy and edges intact, no new characters, no border, no opaque background. This is an edit to the supplied image, not a redesign.
+```

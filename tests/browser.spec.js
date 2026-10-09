@@ -92,8 +92,8 @@ test("three incorrect pictures end the round, replay restores hearts, and all co
   ).toBeVisible();
   await expect(page.locator(".result-stats")).toContainText("10 / 10");
   await expect(page.locator(".celebration-animal")).toBeVisible();
-  await expect.poll(() => page.locator(".celebration-animal").evaluate((img) => img.complete && img.naturalWidth > 0)).toBe(true);
-  const firstAnimal = await page.locator(".celebration-animal").getAttribute("src");
+  await expect(page.locator(".celebration-animal")).toHaveCSS("background-image", /full-body-friends/);
+  const firstAnimal = await page.locator(".celebration-animal").getAttribute("data-animal");
   await page.locator(".animal-entrance").evaluate(async (element) => {
     await Promise.all(element.getAnimations().map((animation) => animation.finished));
   });
@@ -107,7 +107,7 @@ test("three incorrect pictures end the round, replay restores hearts, and all co
     if (i < 9) await expect(page.getByText(`Word ${i + 2} of 10`)).toBeVisible();
     else await expect(page.getByRole("heading", { name: "Well Done!" })).toBeVisible();
   }
-  expect(await page.locator(".celebration-animal").getAttribute("src")).not.toBe(firstAnimal);
+  expect(await page.locator(".celebration-animal").getAttribute("data-animal")).not.toBe(firstAnimal);
   expect(await page.locator(".animal-entrance").evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });

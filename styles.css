@@ -2430,3 +2430,139 @@ body[data-view="game"] .game-feedback p {
   .site-footer { gap: 8px; }
   .site-footer .footer-spark { margin-right: 3px; }
 }
+
+/* Both adventures share the same card treatment. */
+.games-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.games-grid .game-card { grid-template-columns: 1fr; }
+.games-grid .game-card-art { min-height: 240px; }
+.games-grid .game-card-copy { display: flex; flex-direction: column; align-items: flex-start; }
+.games-grid .game-card-copy > .button { margin-top: auto; }
+.builder-card .game-card-art { background: #f5e6cf; }
+.builder-card .letter-tiles { transform: rotate(-5deg); }
+.builder-card .letter-tiles span { font-size: 38px; }
+
+body[data-view="game"] .build-area {
+  grid-template-rows: auto auto minmax(100px, 1fr) auto auto;
+  gap: clamp(5px, 1.3dvh, 12px);
+}
+.build-prompt { min-height: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.build-prompt h1 { font-size: clamp(22px, 4vw, 30px); line-height: 1.2; margin: 0; }
+.build-prompt img { width: 170px; max-width: 40vw; flex: 1; min-height: 0; height: 100%; object-fit: contain; }
+.build-workspace { width: 100%; min-width: 0; }
+.word-slots, .part-tray { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
+.word-slot, .part-tile {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 7px 12px;
+  border-radius: 12px;
+  font-family: Andika, sans-serif;
+  font-size: clamp(21px, 4vw, 29px);
+  line-height: 1.2;
+  text-align: center;
+}
+.word-slot { display: grid; place-items: center; border: 2px dashed #a4b9ac; background: #f0f5ef; }
+.word-slot.empty { color: #72857a; }
+.word-slot.filled { border: 2px solid var(--green); background: #e4f0e9; color: var(--green-dark); }
+.part-tile { background: #fff5df; border: 1px solid #d9c492; box-shadow: 0 3px 0 #ddcba5; color: #59492f; }
+.part-tile:hover:not(:disabled) { background: #ffeabd; transform: translateY(-2px); }
+.part-tile:disabled { opacity: .32; box-shadow: none; }
+.word-slot:focus-visible, .part-tile:focus-visible { outline: 3px solid #b27624; outline-offset: 3px; }
+.build-hint { text-align: center; font-size: 14px; color: var(--muted); margin: 7px 0 12px; }
+.built-correct .word-slot { background: #d8ecd6; border-color: #458741; }
+.build-bottom { text-align: center; }
+.build-feedback { font-size: 15px; line-height: 1.4; margin: 0 0 9px; color: var(--muted); }
+.build-feedback.success { color: var(--green); font-weight: 800; }
+.build-controls { display: flex; align-items: center; justify-content: center; gap: 22px; }
+.build-controls .button { min-height: 44px; padding: 10px 20px; }
+.build-controls :disabled { opacity: .5; }
+@media (max-width: 740px) {
+  .games-grid { grid-template-columns: 1fr; }
+  .games-grid .game-card { grid-template-columns: 40% 60%; }
+  .games-grid .game-card-art { min-height: 250px; }
+  .build-hint { margin-bottom: 10px; }
+}
+@media (max-width: 480px) {
+  .games-grid .game-card { grid-template-columns: 1fr; }
+  .games-grid .game-card-art { min-height: 225px; }
+  .word-slots, .part-tray { gap: 6px; }
+  .word-slot, .part-tile { padding: 7px 9px; min-width: 44px; min-height: 44px; }
+  .build-controls { gap: 14px; }
+  .build-controls .text-button { font-size: 14px; }
+}
+/* Allow the building surface to scroll on short screens or with enlarged text. */
+html:has(body[data-game="building"][data-view="game"]) { overflow: auto; }
+body[data-game="building"][data-view="game"] { height: auto; min-height: 100dvh; overflow: visible; }
+body[data-game="building"][data-view="game"] main { min-height: min(650px, calc(100dvh - 70px)); }
+body[data-game="building"][data-view="game"] .build-area { min-height: 510px; }
+@media (max-height: 600px) and (min-width: 500px) {
+  body[data-game="building"][data-view="game"] .build-area { min-height: 400px; }
+  .build-prompt img { max-height: 100px; }
+}
+
+/* The Hatter brings his word jumble to the Wonderland tea party. */
+.builder-card .game-card-art { background: #f1e5ef; }
+.builder-card .game-card-art::after { border-color: #c3a2ba; }
+.builder-card .letter-tiles { top: 22px; left: 20%; transform: rotate(-9deg); }
+.builder-card .letter-tiles span { width: 48px; height: 55px; font-size: 31px; }
+.card-hatter-hat {
+  position: absolute;
+  width: 158px;
+  height: 158px;
+  left: calc(50% - 28px);
+  bottom: 34px;
+  transform: rotate(9deg);
+}
+.card-hatter-cup {
+  position: absolute;
+  width: 92px;
+  height: 92px;
+  left: calc(50% - 118px);
+  bottom: 31px;
+  transform: rotate(-12deg);
+}
+.hatter-ticket {
+  position: absolute;
+  left: calc(50% + 67px);
+  bottom: 124px;
+  padding: 4px 7px;
+  border: 1px solid #cebfb0;
+  background: #fffbea;
+  font: 16px Fraunces, Georgia, serif;
+  transform: rotate(15deg);
+}
+.builder-card .spark-one { left: 12%; top: 120px; color: #9d6685; }
+.builder-card .art-caption { color: #815c74; }
+body[data-game="building"] .part-tile { background: #f9edf4; border-color: #cba9bd; box-shadow: 0 3px 0 #dbc0cf; color: #68445b; }
+body[data-game="building"] .part-tile:hover:not(:disabled) { background: #f3dfeb; }
+body[data-game="building"] .part-tile:disabled { box-shadow: none; }
+
+.build-controls .button.amber {
+  background: #f4cf79;
+  color: #583c13;
+  border: 1px solid #d6a64c;
+  box-shadow: 0 3px 0 #c99439;
+}
+.build-controls .button.amber:hover:not(:disabled) { background: #ffdc8c; }
+.build-controls .button.amber:disabled { box-shadow: none; }
+
+/* Full-body storybook friends, one per cell in the 3 × 3 illustration sheet. */
+.animal-entrance, .celebration-animal { width: 240px; }
+.celebration-animal {
+  height: 240px;
+  background-image: url("./assets/celebration/full-body-friends.png");
+  background-repeat: no-repeat;
+  background-size: 300% 300%;
+}
+.friend-rabbit { background-position: 0% 0%; }
+.friend-fox { background-position: 50% 0%; }
+.friend-cat { background-position: 100% 0%; }
+.friend-dog { background-position: 0% 50%; }
+.friend-hedgehog { background-position: 50% 50%; }
+.friend-lion { background-position: 100% 50%; }
+.friend-owl { background-position: 0% 100%; }
+.friend-bear { background-position: 50% 100%; }
+.friend-penguin { background-position: 100% 100%; }
+@media (max-height: 700px) {
+  .animal-entrance, .celebration-animal { width: 190px; }
+  .celebration-animal { height: 190px; }
+}

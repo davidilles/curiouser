@@ -57,7 +57,7 @@ These commands assume a fresh local folder with no Git repository. If you have a
 #### Option B: upload in your browser
 
 1. In your empty GitHub repository, select **uploading an existing file**. Once files exist, the option is **Add file → Upload files**.
-2. Upload `index.html`, `styles.css`, `README.md` and `ASSETS.md` at the repository root. Upload the **`src` folder**, **`assets/fonts` folder** and **`assets/sounds` folder**, preserving those paths, and put `reading-friends.png` inside **`assets`**.
+2. Upload `index.html`, `styles.css`, `README.md` and `ASSETS.md` at the repository root. Upload the **`src` folder**, **`assets/fonts` folder** and **`assets/sounds` folder**, preserving those paths, and include `reading-friends-alice.png` inside **`assets`**, plus **`assets/celebration`** with its full-body friend sheet.
 3. Upload every PNG in `assets/pictures`, plus its `sources.json` and `LICENSE.txt`. GitHub allows **up to 100 files per upload**, so upload the picture collection in several batches. Navigate into `assets/pictures` before each batch; the files must end up there, not at the repository root. To create that folder first, use **Add file → Create new file**, enter `assets/pictures/.gitkeep` as the filename, and commit it.
 4. Commit each upload to **`main`**, with a message such as “Add Curiouser pictures”.
 5. Add the hidden `.nojekyll` file at the root. If your file picker cannot show it, choose **Add file → Create new file**, type **`.nojekyll`** as the filename, enter a comment such as `Static website; no Jekyll build needed.`, and commit.
@@ -75,10 +75,12 @@ curiouser/                       ← repository root
 ├── src/
 │   ├── app.js
 │   ├── audio.js
+│   ├── build-word.js
 │   ├── game.js
 │   └── words.js
 └── assets/
-    ├── reading-friends.png
+    ├── reading-friends-alice.png
+    ├── celebration/             ← full-body animal celebration artwork
     ├── fonts/                   ← include font files AND their licences
     ├── sounds/                  ← both WAV sound effects
     └── pictures/                ← include all pictures, sources and licence
@@ -131,7 +133,7 @@ GitHub Pages republishes the selected branch automatically. Wait for the deploym
 3. Read the word and tap the matching picture. Keyboard users can Tab to a picture and press Enter/Space, or press 1–4.
 4. A correct answer earns one word. The picture gives a little celebratory bounce and sparkle, then the next word appears automatically after about one second. There is no Next button and no time limit for answering.
 5. Each different wrong picture costs one heart. The same wrong picture cannot cost a second heart.
-6. Three lost hearts ends the game and shows the matching picture and word. A round finishes successfully after ten correct words. A random animal bounces in with a “Well Done!” speech bubble; consecutive wins reveal different animals. Reduced-motion preferences show the celebration without animation.
+6. Three lost hearts ends the game and shows the matching picture and word. A round finishes successfully after ten correct words. A random full-body storybook animal bounces in with a “Well Done!” speech bubble; consecutive wins reveal different animals. Reduced-motion preferences show the celebration without animation.
 7. **Play again** starts a fresh shuffled round with three hearts. **Choose a term** returns to setup.
 
 Sound starts off and can be enabled using the header's sound button. Correct answers play a soft, sparkling music-box flourish; wrong answers play two gentle bubble pops. Feedback never speaks the answer. A browser that cannot play sound can still play the game. Leaving or refreshing a round resets it; there are no saved profiles or scores.
@@ -200,4 +202,10 @@ On Linux, Playwright may need system browser libraries (`npx playwright install-
 
 ## Preview version
 
-The footer displays `v1.1.1`. Bump the version in `package.json`, the root entries in `package-lock.json`, and the visible label and accessible label in `index.html` whenever publishing a changed preview. Keep the same version when promoting that reviewed build to GitHub.
+The footer displays `v1.2.2`. Bump the version in `package.json`, the root entries in `package-lock.json`, and the visible label and accessible label in `index.html` whenever publishing a changed preview. Keep the same version when promoting that reviewed build to GitHub.
+
+## The Hatter’s Word Workshop
+
+The second adventure, **The Hatter’s Word Workshop**, is at `#build-word`. Its top hat, 10/6 ticket and tea cup tie the word-building puzzles to the Mad Hatter’s tea party. Pick a term, identify the picture, and tap the parts in order. Tap a placed piece to return it, or use the amber **Reset word** button to clear the slots. Filling the final slot automatically checks the word: correct words chime and advance, while incorrect words pop and clear the slots for another try. Each distinct incorrect word costs one heart; repeating the same mistake still resets the word without an additional penalty. Completing ten words reveals the same random animal celebration as the reading game.
+
+The curated bank in `src/build-word.js` contains 24 Autumn words, 16 additional Spring words and 16 additional Summer words (56 total). Later rounds mix six current-term words with four revision words. Short words use contiguous sound chunks; compounds use meaningful parts. The sets are practice bands, not a prescribed curriculum. Autumn includes two unused pieces; later terms include three. All artwork is bundled locally. Like the reading game, descriptive image labels reveal the picture name to screen-reader users.
