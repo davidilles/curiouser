@@ -1,9 +1,11 @@
+import { createAutoAdvance } from "./auto-advance.js";
+import { showMath, handleMathClick, getMathRound, advanceMath, toggleMathRoses, mathProgressSummary, clearMathProgress } from "./math-ui.js";
 import { TERMS, LEVELS, getBank } from "./words.js";
 import { createRound, answer, nextQuestion } from "./game.js";
 import { createSoundPlayer } from "./audio.js";
 import { BUILD_TERMS, getBuildBank, createBuildRound, selectPart, removePart, checkBuild, nextBuildQuestion } from "./build-word.js";
 import { wordPicture } from "./pictures.js";
-import { CELEBRATION_FRIENDS, chooseCelebrationFriend, celebrationStyle } from "./celebration.js";
+import { CELEBRATION_FRIENDS, chooseCelebrationFriend, celebrationMarkup } from "./celebration.js";
 
 const main = document.querySelector("#main");
 const dialog = document.querySelector("#grownups-dialog");
@@ -16,6 +18,7 @@ announcer.setAttribute("aria-live", "polite");
 document.body.append(announcer);
 
 let term = "autumn";
+let extraPractice = false;
 let gameType = "reading";
 const setupHash = () => gameType === "building" ? "#build-word" : "#phonics";
 const gameName = () => gameType === "building" ? "The Hatter’s Word Workshop" : "The Reading Rabbit";
@@ -35,8 +38,11 @@ const soundPlayer = createSoundPlayer({
   },
 });
 let view = "home";
-let advanceTimer = null;
-const CELEBRATION_MS = 950;
+const autoAdvance = createAutoAdvance({
+  getRound: () => gameType === "maths" ? getMathRound() : round,
+  canAdvance: () => (view === "game" || view === "math") && !dialog.open && !document.hidden,
+  advance: goNext,
+});
 let celebrationAnimal = null;
 let previousCelebrationAnimal = null;
 
@@ -46,32 +52,8 @@ function chooseCelebrationAnimal() {
   return animal;
 }
 
-function cancelAdvance() {
-  window.clearTimeout(advanceTimer);
-  advanceTimer = null;
-}
-
-function scheduleAdvance() {
-  cancelAdvance();
-  if (
-    view !== "game" ||
-    round?.status !== "answered" ||
-    dialog.open ||
-    document.hidden
-  )
-    return;
-  const celebratedRound = round;
-  advanceTimer = window.setTimeout(() => {
-    advanceTimer = null;
-    if (
-      view === "game" &&
-      round === celebratedRound &&
-      !dialog.open &&
-      !document.hidden
-    )
-      goNext();
-  }, CELEBRATION_MS);
-}
+function cancelAdvance() { autoAdvance.cancel(); }
+function scheduleAdvance() { autoAdvance.schedule(); }
 
 const icon = (name) => {
   const paths = {
@@ -160,6 +142,15 @@ function renderHome() {
             <a class="button primary" href="#build-word">Join the tea party ${icon("play")}</a>
           </div>
         </article>
+        <article class="game-card maths-card">
+          <div class="game-card-art" aria-hidden="true"><span class="card-corner">Q<span>♥</span></span>
+            <img class="queen-crown" src="./assets/pictures/crown.png" alt=""><span class="ten-medallion">10</span>
+            <img class="queen-rose" src="./assets/pictures/rose.png" alt=""><span class="art-caption">TWO PARTS. ONE PERFECT TEN.</span>
+          </div><div class="game-card-copy"><div class="card-tags"><span class="pill green">MATHS</span><span class="age-label">Number bonds to 10</span></div>
+            <h3>The Queen’s<br>Ten</h3><p>Ten roses in the royal garden.<br>Find the missing number and watch them bloom.</p>
+            <div class="game-details"><span>No timer</span><span class="detail-divider"></span><span>Every try helps</span></div>
+            <a class="button primary" href="#number-bonds">Visit the garden ${icon("play")}</a>
+          </div></article>
       </div>
     </section>
     <div class="home-note">${picture("key")}<p>There’s no rush in this rabbit hole.<br><strong>Take your time. Have a go. Let your curiosity grow.</strong></p></div>`;
@@ -184,10 +175,14 @@ function renderSetup() {
             ${picture(item.image, "term-picture")}
             <span class="term-name">${item.name}</span>
             <span class="term-description">${gameType === "building" ? BUILD_TERMS[item.id] : LEVELS[`year1-${item.id}`].description}</span>
-            <span class="term-count">${(gameType === "building" ? getBuildBank(item.id) : getBank("year1", item.id)).length} words to explore</span>
+            <span class="term-count">${(gameType === "building" ? getBuildBank(item.id, extraPractice) : getBank("year1", item.id, extraPractice)).length} words to explore</span>
           </label>`,
         ).join("")}</div>
       </fieldset>
+      <label class="extra-practice-option">
+        <input type="checkbox" name="extra-practice" ${extraPractice ? "checked" : ""}>
+        <span><strong>Extra practice: er · ear · ur</strong><small>Mix in more words with these sounds.</small></span>
+      </label>
       <div class="setup-bottom"><p><span aria-hidden="true">♥ ♥ ♥</span> Three hearts. Ten words. All the time you need.</p>
         <button type="button" class="button primary" data-action="start">${gameType === "building" ? "Let’s build" : "Let’s play"} ${icon("play")}</button>
       </div>
@@ -317,11 +312,7 @@ function renderResult() {
   document.title = `${won ? "Wonderful reading!" : "Try another adventure"} · Curiouser`;
   main.innerHTML = `
     <section class="result ${won ? "result-won" : ""}" aria-labelledby="result-title">
-      ${won ? `<div class="animal-celebration ${celebrationAnimal.special ? "wonderland-visit" : ""}">
-        <h1 id="result-title" class="animal-speech" tabindex="-1">Well Done!</h1>
-        <div class="animal-entrance"><span class="celebration-animal" style="${celebrationStyle(celebrationAnimal)}" data-animal="${celebrationAnimal.id}" data-special="${celebrationAnimal.special}" role="img" aria-label="${celebrationAnimal.name}, celebrating with its whole body visible"></span><span class="animal-shadow" aria-hidden="true"></span></div>
-        <span class="celebration-star star-left" aria-hidden="true">✦</span><span class="celebration-star star-right" aria-hidden="true">✧</span>
-      </div>` : `<div class="result-art">${picture("rabbit")}</div>`}
+      ${won ? celebrationMarkup(celebrationAnimal) : `<div class="result-art">${picture("rabbit")}</div>`}
       <span class="eyebrow">${won ? "ALL 10 WORDS FOUND!" : "GAME OVER · ANOTHER TRY AWAITS"}</span>
       ${!won ? '<h1 id="result-title" tabindex="-1">Let’s give it another go.</h1>' : ""}
       <p>${won ? (gameType === "building" ? "A splendid collection of words. The Hatter is delighted!" : "A whole little adventure, one word at a time.") : "Every little try helps your reading grow."}</p>
@@ -342,7 +333,7 @@ function startRound() {
     const friends = new Image();
     friends.src = src;
   });
-  round = gameType === "building" ? createBuildRound(term) : createRound(getBank("year1", term));
+  round = gameType === "building" ? createBuildRound(term, Math.random, extraPractice) : createRound(getBank("year1", term, extraPractice), Math.random, extraPractice);
   // Preload just this round's pictures rather than the entire collection.
   new Set(
     round.questions.flatMap((question) =>
@@ -380,6 +371,7 @@ function submitAnswer(id) {
 }
 
 function goNext() {
+  if (view === "math" && gameType === "maths") return advanceMath();
   if (view !== "game" || round?.status !== "answered") return;
   const updated = gameType === "building" ? nextBuildQuestion(round) : nextQuestion(round);
   if (updated === round) return;
@@ -393,18 +385,24 @@ function goNext() {
 function route() {
   cancelAdvance();
   soundPlayer.stop();
-  const hash = location.hash.slice(1);
-  if (hash === "phonics" || hash === "build-word") {
+  const [hash, query = ""] = location.hash.slice(1).split("?");
+  if (/^number-bonds(?:\/(learn|practice|recall))?$/.test(hash)) {
+    gameType = "maths";
+    setView("math");
+    showMath(main, hash.split("/")[1], soundPlayer, announce, scheduleAdvance);
+  } else if (hash === "phonics" || hash === "build-word") {
     gameType = hash === "build-word" ? "building" : "reading";
     renderSetup();
   } else if (/^build\/(autumn|spring|summer)$/.test(hash)) {
     gameType = "building";
     term = hash.split("/")[1];
+    extraPractice = new URLSearchParams(query).get("extra") === "1";
     startRound();
   }
   else if (/^play\/(autumn|spring|summer)$/.test(hash)) {
     gameType = "reading";
     term = hash.split("/")[1];
+    extraPractice = new URLSearchParams(query).get("extra") === "1";
     startRound();
   } else renderHome();
   window.scrollTo({ top: 0, behavior: "instant" });
@@ -413,9 +411,14 @@ function route() {
 
 function showGuide() {
   cancelAdvance();
+  dialog.querySelector("#math-progress-summary").textContent = mathProgressSummary();
   if (!dialog.open) dialog.showModal();
 }
 dialog.addEventListener("close", scheduleAdvance);
+dialog.querySelector('[data-clear-math-progress]').addEventListener('click', () => {
+  clearMathProgress();
+  dialog.querySelector('#math-progress-summary').textContent = mathProgressSummary();
+});
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     cancelAdvance();
@@ -441,6 +444,14 @@ dialog.addEventListener("click", (event) => {
 });
 
 main.addEventListener("change", (event) => {
+  if (event.target.matches('input[name="extra-practice"]')) {
+    extraPractice = event.target.checked;
+    main.querySelectorAll('.term-card').forEach((card) => {
+      const choice = card.querySelector('input[name="term"]').value;
+      card.querySelector('.term-count').textContent = `${getBank("year1", choice, extraPractice).length} words to explore`;
+    });
+  }
+  if (event.target.matches('input[name="show-roses"]')) toggleMathRoses(event.target.checked);
   if (
     event.target.matches('input[name="term"]') &&
     TERMS.some((item) => item.id === event.target.value)
@@ -450,12 +461,13 @@ main.addEventListener("change", (event) => {
 main.addEventListener("click", (event) => {
   const button = event.target.closest("button");
   if (!button || button.disabled) return;
+  if (gameType === "maths" && handleMathClick(button)) return;
   if (button.dataset.answer) return submitAnswer(button.dataset.answer);
   if (button.dataset.part) return editBuild(selectPart(round, button.dataset.part));
   if (button.dataset.remove !== undefined) return editBuild(removePart(round, Number(button.dataset.remove)));
   switch (button.dataset.action) {
     case "start":
-      location.hash = `${gameType === "building" ? "build" : "play"}/${term}`;
+      location.hash = `${gameType === "building" ? "build" : "play"}/${term}${extraPractice ? "?extra=1" : ""}`;
       break;
     case "clear-build":
       editBuild({ ...round, selected: [], lastAnswer: null });

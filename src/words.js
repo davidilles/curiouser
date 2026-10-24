@@ -4,8 +4,11 @@
 // Pictures include objects, quantities and actions; avoid obscure vocabulary as padding.
 import { WORD_GROUPS } from "./word-data.js";
 
+export const EXTRA_WORD_IDS = ["herb", "perch", "herd", "hear", "beard", "tear", "fur", "curl", "surf"];
+const practiceSound = (focus) => ({ "er-fern": "er", "er-unstressed": "er", "ear-near": "ear", ur: "ur" })[focus] ?? null;
+
 export const NEW_WORDS = Object.fromEntries(
-  Object.entries(WORD_GROUPS).map(([term, entries]) => [term, entries.map((entry) => entry.word)]),
+  Object.entries(WORD_GROUPS).map(([term, entries]) => [term, entries.filter((entry) => !EXTRA_WORD_IDS.includes(entry.word)).map((entry) => entry.word)]),
 );
 
 const groups = {
@@ -20,6 +23,12 @@ const groups = {
 
 // Prevent related pictures from being shown together when either could fit a word.
 const relatedPictures = [
+  ["herb", "fern", "leaf", "tree", "grass"],
+  ["perch", "bird", "hen", "chick"],
+  ["herd", "cow"],
+  ["hear", "ear", "tear", "eye", "beard", "boy", "girl"],
+  ["fur", "curl"],
+  ["surf", "wave", "beach", "shore"],
   ["hat", "cap", "helmet"],
   ["boat", "ship"],
   ["cup", "teapot"],
@@ -112,13 +121,21 @@ export const WORD_BANKS = Object.fromEntries(
     id,
     words.map((word) => ({
       ...definitions.get(word),
+      practiceSound: practiceSound(definitions.get(word).focus),
       related: relatedPictures.filter((group) => group.includes(word)).flat(),
     })),
   ]),
 );
 
-export function getBank(year, term) {
-  const bank = WORD_BANKS[`${year}-${term}`];
+const EXTRA_WORDS = EXTRA_WORD_IDS.map((word) => ({
+  ...definitions.get(word),
+  practiceSound: practiceSound(definitions.get(word).focus),
+  related: relatedPictures.filter((group) => group.includes(word)).flat(),
+}));
+const EXTRA_BANKS = Object.fromEntries(Object.entries(WORD_BANKS).map(([id, bank]) => [id, [...bank, ...EXTRA_WORDS]]));
+
+export function getBank(year, term, extraPractice = false) {
+  const bank = (extraPractice ? EXTRA_BANKS : WORD_BANKS)[`${year}-${term}`];
   if (!bank) throw new Error("Please choose a valid school year and term.");
   return bank;
 }

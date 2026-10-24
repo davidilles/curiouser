@@ -1,5 +1,7 @@
 # Curiouser
 
+Read [DESIGN.md](DESIGN.md) before making changes: it records the agreed interaction design and preview/approval workflow.
+
 A small, Alice in Wonderland inspired collection of games for curious children. The first game, **The Reading Rabbit**, practises **Year 1 phonics** through word-to-picture matching.
 
 The website is plain **HTML, CSS and JavaScript**. All pictures and fonts are included. There is no build step, backend, API key, account system, advertising or analytics. It works on GitHub Pages, including a project URL such as `https://YOUR-USERNAME.github.io/curiouser/`.
@@ -139,7 +141,7 @@ GitHub Pages republishes the selected branch automatically. Wait for the deploym
 6. Three lost hearts ends the game and shows the matching picture and word. A round finishes successfully after ten correct words. One of 18 full-body storybook friends bounces in with a “Well Done!” speech bubble; consecutive wins reveal different animals. The Cheshire Cat, White Rabbit, Caterpillar, Dormouse and Dodo share a 20% chance per win, with the 13 regular animals sharing the remaining 80%. Reduced-motion preferences show the celebration without animation.
 7. **Play again** starts a fresh shuffled round with three hearts. **Choose a term** returns to setup.
 
-Sound starts off and can be enabled using the header's sound button. Correct answers play a soft, sparkling music-box flourish; wrong answers play two gentle bubble pops. Feedback never speaks the answer. A browser that cannot play sound can still play the game. Leaving or refreshing a round resets it; there are no saved profiles or scores.
+Sound starts off and can be enabled using the header's sound button. Correct answers play a soft, sparkling music-box flourish; wrong answers play two gentle bubble pops. Feedback never speaks the answer. A browser that cannot play sound can still play the game. Leaving or refreshing a round resets it. Phonics has no saved profiles or scores; the maths game keeps only the latest summary locally, as described below.
 
 Sound uses two tiny, locally bundled WAV files played through native HTML audio, directly from the speaker/answer tap. The speaker shows a loading state until playback starts. Failed playback resets it to off and shows a retry message; muting stops an effect immediately. This replaces the original Web Audio oscillator path, which could silently fail to resume on mobile browsers. iOS also treats Web Audio and HTML audio differently around the Ring/Silent switch ([WebKit explanation](https://bugs.webkit.org/show_bug.cgi?id=252746)). Headless tests verify media decoding, playback events and error recovery, but cannot verify the physical speaker, volume or audio route on an iPhone.
 
@@ -147,7 +149,7 @@ During play, the word, hearts and four pictures fit into the visible browser hei
 
 ## Word collection and term suitability
 
-Both games share **237 distinct words**, with a matching picture and curated building pieces for every entry. The shared catalogue is `src/word-data.js`; see [the coverage checklist](PHONICS-COVERAGE.md).
+Both games share **237 regular words plus 9 optional extra-practice words**, with a matching picture and curated building pieces for every entry. The shared catalogue is `src/word-data.js`; see [the coverage checklist](PHONICS-COVERAGE.md).
 
 | Year 1 term | Available words | Added this term | Practice focus                                                                                                     |
 | ----------- | --------------: | --------------: | ------------------------------------------------------------------------------------------------------------------ |
@@ -208,10 +210,21 @@ On Linux, Playwright may need system browser libraries (`npx playwright install-
 
 ## Preview version
 
-The footer displays `v1.3.0`. Bump the version in `package.json`, the root entries in `package-lock.json`, and the visible label and accessible label in `index.html` whenever publishing a changed preview. Keep the same version when promoting that reviewed build to GitHub.
+The footer displays `v1.4.2`. Bump the version in `package.json`, the root entries in `package-lock.json`, and the visible label and accessible label in `index.html` whenever publishing a changed preview. Keep the same version when promoting that reviewed build to GitHub.
 
 ## The Hatter’s Word Workshop
 
 The second adventure, **The Hatter’s Word Workshop**, is at `#build-word`. Its top hat, 10/6 ticket and tea cup tie the word-building puzzles to the Mad Hatter’s tea party. Pick a term, identify the picture, and tap the parts in order. Tap a placed piece to return it, or use the amber **Reset word** button to clear the slots. Filling the final slot automatically checks the word: correct words chime and advance, while incorrect words pop and clear the slots for another try. Each distinct incorrect word costs one heart; repeating the same mistake still resets the word without an additional penalty. Completing ten words reveals the same random animal celebration as the reading game.
 
-Both adventures use exactly the same 237-word catalogue: 88 Autumn words, 58 additional Spring words and 91 additional Summer words. Later rounds mix six current-term words with four revision words. Short words use sound/spelling pieces; a linked split-digraph piece such as `a_e` places its two letters around the next piece, so `c`, `a_e`, `k` displays and checks as **cake**. Longer words can use syllable, compound or root-and-ending pieces. Single-sound words such as **ear** have one piece. The sets are practice bands, not a prescribed curriculum. Autumn includes two unused pieces; later terms include three. Letter pieces are at least 56×56px on phones, with a larger amber reset button. All artwork is bundled locally. Like the reading game, descriptive image labels reveal the picture name to screen-reader users.
+Both adventures use exactly the same regular 237-word catalogue: 88 Autumn words, 58 additional Spring words and 91 additional Summer words. The extra-practice checkbox adds nine words to any chosen term. Later rounds mix six current-term words with four revision words. Short words use sound/spelling pieces; a linked split-digraph piece such as `a_e` places its two letters around the next piece, so `c`, `a_e`, `k` displays and checks as **cake**. Longer words can use syllable, compound or root-and-ending pieces. Single-sound words such as **ear** have one piece. The sets are practice bands, not a prescribed curriculum. Autumn includes two unused pieces; later terms include three. Letter pieces are at least 56×56px on phones, with a larger amber reset button. All artwork is bundled locally. Like the reading game, descriptive image labels reveal the picture name to screen-reader users.
+
+
+## The Queen’s Ten and extra-practice words (v1.4.2)
+
+The maths card opens `#number-bonds` straight into a question. Tap the missing number; correct answers advance automatically after 950 ms. A Show roses checkbox hides or reveals the ten-frame. Each round contains exactly ten challenges: five additions and five subtractions, covering all six pairs at least once with varied missing-number positions. Mistakes receive support and another try at the same question; they never lengthen the round or cost hearts. The success delay pauses while the tab is hidden or the grown-ups guide is open. The tenth correct answer reveals the same Well Done! animal animation as the phonics games, with Play again and All games. Four new garden friends—frog, flamingo, peacock and butterfly—appear only in maths. The first maths win in a visit guarantees a garden friend; later wins mix garden and familiar animals with no consecutive repeats.
+
+Each phonics term screen has one checkbox: **Extra practice: er · ear · ur**. Off uses the original word bank and term/revision mix. On adds nine illustrated words to the selected term and selects two er, two ear, two ur and four other targets per round. All ten targets remain unique. Ear emphasis uses hear, not bear; er words can include stressed fern and familiar unstressed endings from the selected term. Words and building pieces keep their normal styling in extra practice, and all correct answers advance automatically. The checkbox remains selected as you move between games during a visit; the round URL includes `?extra=1` for a reloadable extra-practice round. No separate focused game or term route is offered.
+
+The nine added words are herb, perch, herd, hear, beard, tear, fur, curl and surf. Tear means a teardrop. A grown-up can ask for the word and sound before the child chooses their answer. The app does not assess speech.
+
+The last completed maths round’s mode and independent-answer count are saved only on the device; they can be read or cleared in the grown-ups guide. Seeing roses or making a mistake prevents that answer being counted as independent, even if the roses are subsequently hidden. Phonics progress stays in the open tab.

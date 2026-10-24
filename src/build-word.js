@@ -9,12 +9,12 @@ export const BUILD_TERMS = {
   summer: "Longer words, plurals and actions",
 };
 // The two games deliberately use the exact same entries and term membership.
-export function getBuildBank(term) {
-  return getBank("year1", term);
+export function getBuildBank(term, extraPractice = false) {
+  return getBank("year1", term, extraPractice);
 }
-export function createBuildRound(term, random = Math.random) {
-  const bank = getBuildBank(term);
-  const base = createRound(bank, random);
+export function createBuildRound(term, random = Math.random, extraPractice = false) {
+  const bank = getBuildBank(term, extraPractice);
+  const base = createRound(bank, random, extraPractice);
   const pool = [...new Set(bank.flatMap((word) => word.parts))];
   const extraCount = term === "autumn" ? 2 : 3;
   return {

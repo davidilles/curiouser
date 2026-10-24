@@ -149,6 +149,15 @@ beach|b ea ch|ea-leaf
 claw|c l aw|aw
 straw|s t r aw|aw
 fern|f er n|er-fern
+herb|h er b|er-fern
+perch|p er ch|er-fern
+herd|h er d|er-fern
+hear|h ear|ear-near
+beard|b ear d|ear-near
+tear|t ear|ear-near
+fur|f ur|ur
+curl|c ur l|ur
+surf|s ur f|ur
 cube|c u_e b|u-e
 flute|f l u_e t|u-e
 field|f ie l d|ie-field
@@ -279,6 +288,13 @@ const bounds = [
 const sprites = new Map(sheets.flatMap((words, sheet) => words.map((word, cell) =>
   [word, { image: `./assets/pictures/phonics-${sheet + 1}.png`, sprite: { size: 1254, bounds: bounds[sheet][cell], sheet, cell } }],
 )));
+
+// Nine inspected cells in the original 1254px atlas; no resampling.
+["herb", "perch", "herd", "hear", "beard", "tear", "fur", "curl", "surf"].forEach((word, cell) => {
+  sprites.set(word, { image: "./assets/pictures/phonics-focus.png", sprite: {
+    size: 1254, bounds: [(cell % 3) * 418, Math.floor(cell / 3) * 418, 418, 418],
+  }});
+});
 
 export const WORD_GROUPS = Object.fromEntries(Object.entries(entries).map(([term, text], stage) => [
   term,

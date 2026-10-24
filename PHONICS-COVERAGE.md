@@ -1,6 +1,6 @@
 # Phonics content coverage
 
-Both games share **237 words** from `src/word-data.js`. This is a content checklist, not a child assessment or a claim of complete curriculum coverage. Rebuild this file with `node scripts/phonics-coverage.js`.
+Both games share **246 words** from `src/word-data.js`. This includes 237 regular words and nine optional words enabled by the extra-practice checkbox. The term table below lists the regular banks. This is a content checklist, not a child assessment or a claim of complete curriculum coverage. Rebuild this file with `node scripts/phonics-coverage.js`.
 
 | Practice band | Added | Available in each game |
 | --- | ---: | ---: |
@@ -36,11 +36,11 @@ Short-word pieces generally follow graphemes, including linked split digraphs (c
 | ea-bread | 1 | bread |
 | ea-leaf | 6 | peach, leaf, seal, beans, meat, beach |
 | ear-bear | 2 | pear, bear |
-| ear-near | 1 | ear |
+| ear-near | 4 | ear, hear, beard, tear |
 | ee | 4 | bee, sheep, tree, cheese |
 | eer | 1 | deer |
 | ending-ing | 8 | jumping, sleeping, reading, eating, singing, painting, cooking, drinking |
-| er-fern | 1 | fern |
+| er-fern | 4 | fern, herb, perch, herd |
 | er-unstressed | 4 | pepper, ladder, hammer, otter |
 | ew-screw | 1 | screw |
 | ew-stew | 1 | stew |
@@ -89,7 +89,7 @@ Short-word pieces generally follow graphemes, including linked split digraphs (c
 | u-e | 3 | tube, cube, flute |
 | ue-glue | 1 | glue |
 | ue-statue | 1 | statue |
-| ur | 1 | purse |
+| ur | 4 | purse, fur, curl, surf |
 | wh | 2 | whale, wheel |
 | x | 2 | fox, box |
 | y-fly | 1 | fly |

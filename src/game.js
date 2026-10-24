@@ -44,7 +44,7 @@ function pictureDistractors(bank, target, random) {
   return close ? [close, ...candidates.filter((word) => word !== close).slice(0, 2)] : candidates.slice(0, 3);
 }
 
-export function createRound(bank, random = Math.random) {
+export function createRound(bank, random = Math.random, extraPractice = false) {
   if (
     bank.length < 4 ||
     new Set(bank.map((item) => item.id)).size !== bank.length
@@ -55,7 +55,7 @@ export function createRound(bank, random = Math.random) {
   const newWords = bank.filter((item) => (item.stage ?? 0) === newestStage);
   const revision = bank.filter((item) => (item.stage ?? 0) < newestStage);
   const used = new Map();
-  const selected = revision.length
+  let selected = revision.length
     ? shuffle(
         [
           ...variedWords(newWords, 6, random, used),
@@ -64,6 +64,12 @@ export function createRound(bank, random = Math.random) {
         random,
       )
     : variedWords(bank, ROUND_LENGTH, random, used);
+  if (extraPractice) {
+    const targeted = ["er", "ear", "ur"].flatMap((sound) =>
+      shuffle(bank.filter((word) => word.practiceSound === sound), random).slice(0, 2));
+    const general = variedWords(bank.filter((word) => !word.practiceSound), ROUND_LENGTH - targeted.length, random, new Map());
+    selected = shuffle([...targeted, ...general], random);
+  }
   const questions = selected.map((target) => ({
     target,
     options: shuffle(

@@ -74,3 +74,19 @@ Created with the **built-in OpenAI image-generation tool**, using the existing v
 - `assets/celebration/more-friends.png`: White Rabbit with pocket watch, Caterpillar, Dormouse, Dodo, squirrel, panda, tortoise, otter and fawn.
 
 Each sheet is an RGBA PNG, 1254×1254, with genuine transparency. Vocabulary sheets use four rows and four columns. `src/word-data.js` records measured SVG viewports around individual illustrations, preserving complete subjects where their edges extend beyond a nominal cell. The nine celebration friends use a three-by-three CSS sprite sheet. Some generated illustrations use tighter margins than requested; the White Rabbit's ear reaches the top of its source cell. No picture files are fetched from another server while playing.
+
+
+## Focused phonics atlas (v1.4.0)
+
+`assets/pictures/phonics-focus.png` is an original AI-generated 1254×1254 transparent atlas created with OpenAI image generation for this project. Its 3×3 cells depict herb, perch, herd; hear, beard, tear; fur, curl, surf. The original sheet is used without resampling, through clipped SVG viewports.
+
+Prompt: One square 3×3 educational picture atlas; friendly soft 3D clay storybook illustrations on transparent background. In row-major order: potted basil herb; bird perched on a branch; herd of three cows; child cupping a hand to an ear with sound marks; man's full beard; eye with teardrop; brown fur swatch; golden curled lock of hair; surfer riding a wave. Separate equal cells, no text or grid lines.
+
+The maths garden's ten roses are original code-drawn SVG shapes so the displayed quantities are exact. Existing crown and rose pictures are reused on its home card.
+
+
+## Garden celebration friends (v1.4.2)
+
+`assets/celebration/garden-friends.png` is an original 1254×1254 transparent image created with the built-in OpenAI image-generation tool, using `full-body-friends.png` only as a style reference. It contains frog, flamingo, peacock and butterfly in a 2×2 arrangement. The generated PNG is preserved without editing. Measured square CSS viewports in `src/celebration.js` keep full bodies visible; the peacock viewport extends into transparent space below the original sheet. These animals are available only in the Queen's Ten.
+
+Prompt: Create a new square transparent sprite atlas in the reference's soft painterly 3D storybook style, with joyful expressive faces and full-body happy poses. Exactly two equal columns and two equal rows: top left a smiling green frog waving; top right a cheerful pink flamingo with open wings and full legs and feet; bottom left a blue-green peacock with open fan tail and visible feet; bottom right a golden-coral butterfly with friendly eyes, full antennae and four wings. Center each whole animal within its cell with transparent margins. No text, speech bubbles, numbers, grid lines, frames or background.
