@@ -15,7 +15,7 @@ export function mathProgressSummary() {
     // Keep an older saved summary honest until a ten-question round replaces it.
     const total = p?.version === 1 ? 12 : p?.version === 2 ? MATH_ROUND_LENGTH : 0;
     if(total && Number.isInteger(p.independent) && p.independent>=0 && p.independent<=total)
-      return `Last maths round: ${p.independent} of ${total} first-time answers without help.`;
+      return `Last maths round: ${p.independent} of ${total} answers were correct on the first try with the roses hidden.`;
   } catch { /* Storage is optional. */ }
   return 'No completed maths round saved on this device yet.';
 }
@@ -50,7 +50,7 @@ function render() {
       ${celebrationMarkup(celebrationAnimal)}
       <span class="eyebrow">ALL ${MATH_ROUND_LENGTH} CHALLENGES COMPLETE!</span>
       <p>${celebrationAnimal.unicorn ? `${celebrationAnimal.name[0].toUpperCase() + celebrationAnimal.name.slice(1)} came to say well done!` : 'The Queen’s garden is blooming.'}</p>
-      <p class="math-reassurance">${state.independent} of ${MATH_ROUND_LENGTH} first-time answers without help.</p>
+      <p class="math-reassurance">${state.mistakeCount === 0 ? 'You got every answer right first time!' : `You solved all ${MATH_ROUND_LENGTH} challenges!`}</p>
       <div class="math-controls"><button class="button primary" data-math="again">Play again</button><a class="button secondary" href="#">All games</a></div></section>`;return;
   }
   const q=state.questions[state.index],answered=state.status==='answered';
