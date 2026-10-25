@@ -27,6 +27,8 @@ test('maths opens directly into a question and correct clicks request automatic 
     assert.match(root.innerHTML,/class="animal-speech"/);
     assert.match(root.innerHTML,/data-garden-only="true"/);
     assert.match(root.innerHTML,/ALL 10 CHALLENGES COMPLETE/);
+    assert.match(root.innerHTML,/You got every answer right first time!/);
+    assert.doesNotMatch(root.innerHTML,/first-time answers without help/);
     const firstFriend=root.innerHTML.match(/data-animal="([^"]+)"/)[1];
     handleMathClick({dataset:{math:'again'}});
     assert.doesNotMatch(root.innerHTML,/class="animal-speech"/);

@@ -46,6 +46,8 @@ Cover the six pairs (0+10 through 5+5), both addition orders and the subtraction
 
 No introductory mode chooser, explanation cards or extra instruction screen. No Next button after correct answers. After the tenth correct answer, use the same full-body animal, Well Done! speech bubble and animation as the phonics games. Add four roses-only animals: frog, flamingo, peacock and butterfly. The first maths win in a visit introduces one of those. Later wins have a 20% chance of a rare unicorn: Rose, Lavender, Rainbow or Starlight, all exclusive to this game. On the remaining 80% of wins, mix the existing garden-only and familiar pools equally. Unicorns use the same Well Done! animation, with their name in the greeting. Never repeat the previous maths celebration. Keep the garden-only animals out of both phonics games. Respect reduced-motion settings and offer Play again and All games.
 
+The child's result celebrates completion: ‘You got every answer right first time!’ after a mistake-free round, otherwise ‘You solved all 10 challenges!’ Keep the separate count of first-try answers with the roses hidden in the grown-ups guide, using a complete sentence.
+
 Only the latest completed maths round's mode and independent-answer count are saved on the device. The grown-ups guide shows and clears that summary. Play must still work if storage is unavailable. Phonics round state remains in memory.
 
 ## Repository and publication workflow
