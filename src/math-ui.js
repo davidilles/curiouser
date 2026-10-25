@@ -43,13 +43,13 @@ export function toggleMathRoses(visible) {
 function render() {
   if(state.status==='won') {
     if(!celebrationAnimal) {
-      celebrationAnimal=chooseMathCelebrationFriend(previousCelebrationId);
+      celebrationAnimal=chooseMathCelebrationFriend(previousCelebrationId, Math.random, state.mistakeCount === 0);
       previousCelebrationId=celebrationAnimal.id;
     }
     root.innerHTML=`<section class="result math-result result-won" aria-labelledby="result-title">
       ${celebrationMarkup(celebrationAnimal)}
       <span class="eyebrow">ALL ${MATH_ROUND_LENGTH} CHALLENGES COMPLETE!</span>
-      <p>The Queen’s garden is blooming.</p>
+      <p>${celebrationAnimal.unicorn ? `${celebrationAnimal.name[0].toUpperCase() + celebrationAnimal.name.slice(1)} came to say well done!` : 'The Queen’s garden is blooming.'}</p>
       <p class="math-reassurance">${state.independent} of ${MATH_ROUND_LENGTH} first-time answers without help.</p>
       <div class="math-controls"><button class="button primary" data-math="again">Play again</button><a class="button secondary" href="#">All games</a></div></section>`;return;
   }

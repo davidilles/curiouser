@@ -1,7 +1,7 @@
 import { createAutoAdvance } from "./auto-advance.js";
 import { showMath, handleMathClick, getMathRound, advanceMath, toggleMathRoses, mathProgressSummary, clearMathProgress } from "./math-ui.js";
 import { TERMS, LEVELS, getBank } from "./words.js";
-import { createRound, answer, nextQuestion } from "./game.js";
+import { createRound, answer, nextQuestion, STARTING_HEARTS } from "./game.js";
 import { createSoundPlayer } from "./audio.js";
 import { BUILD_TERMS, getBuildBank, createBuildRound, selectPart, removePart, checkBuild, nextBuildQuestion } from "./build-word.js";
 import { wordPicture } from "./pictures.js";
@@ -47,7 +47,7 @@ let celebrationAnimal = null;
 let previousCelebrationAnimal = null;
 
 function chooseCelebrationAnimal() {
-  const animal = chooseCelebrationFriend(previousCelebrationAnimal);
+  const animal = chooseCelebrationFriend(previousCelebrationAnimal, Math.random, round.hearts === STARTING_HEARTS);
   previousCelebrationAnimal = animal.id;
   return animal;
 }

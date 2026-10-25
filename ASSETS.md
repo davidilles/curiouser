@@ -90,3 +90,20 @@ The maths garden's ten roses are original code-drawn SVG shapes so the displayed
 `assets/celebration/garden-friends.png` is an original 1254×1254 transparent image created with the built-in OpenAI image-generation tool, using `full-body-friends.png` only as a style reference. It contains frog, flamingo, peacock and butterfly in a 2×2 arrangement. The generated PNG is preserved without editing. Measured square CSS viewports in `src/celebration.js` keep full bodies visible; the peacock viewport extends into transparent space below the original sheet. These animals are available only in the Queen's Ten.
 
 Prompt: Create a new square transparent sprite atlas in the reference's soft painterly 3D storybook style, with joyful expressive faces and full-body happy poses. Exactly two equal columns and two equal rows: top left a smiling green frog waving; top right a cheerful pink flamingo with open wings and full legs and feet; bottom left a blue-green peacock with open fan tail and visible feet; bottom right a golden-coral butterfly with friendly eyes, full antennae and four wings. Center each whole animal within its cell with transparent margins. No text, speech bubbles, numbers, grid lines, frames or background.
+
+
+## Rare unicorn celebration friends (v1.4.3)
+
+`assets/celebration/unicorn-friends.png` is original transparent artwork created with the built-in OpenAI image-generation tool. The existing garden atlas was used only as a style reference. Four complete unicorns occupy equal 2×2 cells: Rose, Lavender; Rainbow, Starlight. A layout correction adds generous transparent margins; the final generated image is preserved without pixel edits and displayed through CSS sprite viewports. These visitors appear only in The Queen’s Ten, with a 20% draw after the first garden-friend welcome, and never repeat consecutively. They share the established Well Done! animation and reduced-motion behaviour.
+
+Generation prompt:
+
+```text
+Use case: illustration-story. Asset type: a single square transparent 2 by 2 sprite atlas for rare Well Done rewards in a children's roses maths game. The supplied garden-friends image is a STYLE REFERENCE ONLY, not an edit target. Create four NEW joyful unicorn characters with the same polished, richly shaded, soft painterly 3D storybook appeal, large expressive kind eyes and full-body cheerful poses. Exact equal two-column two-row grid. Top left: ivory unicorn with flowing rose-pink mane and tail, small rose blossom tucked behind one ear, gold spiral horn, prancing with a lifted front hoof. Top right: pale lilac unicorn with silky lavender and sky-blue mane and tail, silver spiral horn, sitting sweetly with all hooves visible and one front hoof raised. Bottom left: creamy white unicorn with flowing pastel rainbow mane and tail, gold spiral horn, joyful small leap with all four legs visible. Bottom right: midnight blue unicorn with silver-blue flowing mane and tail, gold spiral horn, a few tiny star markings on its flank, proudly standing with one foreleg lifted. Every character is a unicorn: one visible spiral horn, two ears, four anatomically coherent legs with rounded hooves and one full tail; no wings. Keep each character centred within its exact quadrant. Full silhouette including horn tips, ears, mane, tail and all hooves must fit inside the central 76% of its own quadrant with generous transparent margins on all sides. No overlaps or clipped bodies. Real transparent alpha everywhere outside silhouettes, no background, floor, cast shadows, scattered glitter, grid lines, frames, text or speech bubbles. Four distinct enchanting collectible friends, tasteful colour harmony, warm encouraging smiles, excellent anatomical detail.
+```
+
+Layout correction prompt:
+
+```text
+undefined
+```
