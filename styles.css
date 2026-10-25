@@ -2629,7 +2629,11 @@ body[data-game="building"][data-view="game"] .build-area { max-height: none; }
 .answer-instruction { font-size:14px;margin:20px 0 10px; }
 .number-pad { display:flex;flex-wrap:wrap;justify-content:center;gap:9px;max-width:410px;margin:auto; }
 .number-key { width:56px;height:56px;border:1px solid #a9c2ae;border-radius:14px;background:#f1f5e9;box-shadow:0 3px 0 #b7c9ac;font:28px Andika,sans-serif; }
-.number-key:hover { background:#dfebcb; }.number-key:disabled{opacity:.4;box-shadow:none;}
+/* Touch browsers can retain :hover after a tap, including on the next question. */
+@media (hover: hover) and (pointer: fine) {
+  .number-key:not(:disabled):hover { background:#dfebcb; }
+}
+.number-key:disabled{opacity:.4;box-shadow:none;}
 .math-feedback { margin:22px 0 18px;line-height:1.5; }.math-feedback.success{color:var(--green);font-weight:800;}
 .math-score { display:flex;flex-direction:column;gap:8px;background:#e8efde;border-radius:22px;padding:24px;max-width:380px;margin:24px auto; }
 .math-score strong { font:600 60px Fraunces,serif; }.math-score small{font-size:28px;}

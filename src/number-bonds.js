@@ -21,7 +21,7 @@ export function createMathRound(mode = 'practice', random = Math.random) {
     ...(index === skipSubtraction ? [] : [makeFact(random() < .5 ? a : b, random() < .5 ? 2 : 3)]),
   ]), random);
   return { mode, questions, index: 0, status: 'playing', helped: mode !== 'recall',
-    mistakes: [], independent: 0, supported: 0, lastAnswer: null };
+    mistakeCount: 0, mistakes: [], independent: 0, supported: 0, lastAnswer: null };
 }
 
 export function helpMath(round) {
@@ -30,7 +30,7 @@ export function helpMath(round) {
 export function answerMath(round, value) {
   if (round.status !== 'playing' || !Number.isInteger(value) || value < 0 || value > 10 || round.mistakes.includes(value)) return round;
   const q = round.questions[round.index];
-  if (value !== q.answer) return { ...round, helped: true, mistakes: [...round.mistakes, value], lastAnswer: 'wrong' };
+  if (value !== q.answer) return { ...round, helped: true, mistakeCount: round.mistakeCount + 1, mistakes: [...round.mistakes, value], lastAnswer: 'wrong' };
   const supported = round.helped || round.mistakes.length > 0;
   return { ...round, status: 'answered', lastAnswer: 'correct',
     independent: round.independent + (supported ? 0 : 1),

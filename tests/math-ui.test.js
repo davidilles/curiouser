@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { showMath, getMathRound, toggleMathRoses, handleMathClick, advanceMath, clearMathProgress, mathProgressSummary } from '../src/math-ui.js';
 
 test('maths opens directly into a question and correct clicks request automatic progression', () => {
-  const oldDoc=globalThis.document,oldStorage=globalThis.localStorage;
+  const oldDoc=globalThis.document,oldStorage=globalThis.localStorage,oldRandom=Math.random;
   const saved=new Map();
   globalThis.document={title:''};
   globalThis.localStorage={getItem:key=>saved.get(key)??null,setItem:(key,value)=>saved.set(key,value),removeItem:key=>saved.delete(key)};
@@ -32,14 +32,22 @@ test('maths opens directly into a question and correct clicks request automatic 
     assert.doesNotMatch(root.innerHTML,/class="animal-speech"/);
     while(getMathRound().status!=='won') {
       const q=getMathRound().questions[getMathRound().index];
-      handleMathClick({dataset:{number:String(q.answer)}});advanceMath();
+      handleMathClick({dataset:{number:String(q.answer)}});
+      // Force the rare draw at the end of this completed round only.
+      if(getMathRound().index===9)Math.random=()=>0;
+      advanceMath();
     }
     assert.equal(advances,20);
     assert.notEqual(root.innerHTML.match(/data-animal="([^"]+)"/)[1],firstFriend);
+    assert.match(root.innerHTML,/data-animal="rose-unicorn"/);
+    assert.match(root.innerHTML,/The Rose Unicorn came to say well done!/);
+    assert.match(root.innerHTML,/data-math="again"/);
+    assert.match(root.innerHTML,/All games/);
     assert.match(mathProgressSummary(),/10 of 10/);
     saved.set('curiouser-number-bonds-v1',JSON.stringify({version:1,independent:11}));
     assert.match(mathProgressSummary(),/11 of 12/,'old twelve-question records keep their denominator');clearMathProgress();assert.match(mathProgressSummary(),/No completed/);
   } finally {
+    Math.random=oldRandom;
     if(oldDoc===undefined)delete globalThis.document;else globalThis.document=oldDoc;
     if(oldStorage===undefined)delete globalThis.localStorage;else globalThis.localStorage=oldStorage;
   }

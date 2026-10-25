@@ -1,6 +1,6 @@
 # Curiouser: agreed design and working process
 
-Updated 24 October 2026. Read this before changing the games. These decisions reflect the user's feedback and supersede earlier proposals with separate sound drills, separate focused modes, or a Next button after answering.
+Updated 25 October 2026. Read this before changing the games. These decisions reflect the user's feedback and supersede earlier proposals with separate sound drills, separate focused modes, or a Next button after answering.
 
 ## Purpose and audience
 
@@ -15,6 +15,8 @@ A friendly Alice in Wonderland collection for a Year 1 child, often played with 
 - There is no time limit for answering. Pause automatic advancement while the tab is hidden or the grown-ups guide is open; cancel it on navigation. Repeated taps must not advance twice.
 - Keep detailed explanations, pronunciation caveats and progress information in the grown-ups guide, not the child's game flow.
 - Preserve the established colours, typography, artwork, large touch targets and reduced-motion support.
+
+Rare Alice visitors and unicorns are eligible only when the entire completed round has no wrong answers. Keep their existing 20% draws and no-repeat rules. Using visual help, moving word pieces or resetting an unfinished word is not a mistake. Ordinary animals still celebrate rounds with mistakes. Maths tracks mistakes across all ten questions and resets the count on replay.
 
 ## Phonics: one optional checkbox
 
@@ -36,11 +38,13 @@ The round hash uses `?extra=1` when enabled so refreshing restores the option. O
 
 The home card opens a question immediately. The screen contains the title, a compact progress indicator, one missing-number equation, a rose ten-frame when enabled, number buttons 0–10, and brief feedback.
 
+Number-button hover highlights apply only to devices with a fine pointer and hover support, so touch taps cannot leave a button looking selected on the next question. Preserve keyboard focus indicators and the brief correct-answer highlight.
+
 A single **Show roses** checkbox controls visual support. Roses start visible; hide them to practise recall. A wrong answer reveals them for that question. Seeing help or making a mistake prevents an answer counting as independent, even if the roses are subsequently hidden.
 
 Cover the six pairs (0+10 through 5+5), both addition orders and the subtraction facts from ten. Exactly ten challenges per round, consistent with the other games: five additions and five subtractions, with all six number pairs represented at least once. Vary the orientation and missing-number position across rounds. A mistake gets another try at the same challenge; never append extra challenges.
 
-No introductory mode chooser, explanation cards or extra instruction screen. No Next button after correct answers. After the tenth correct answer, use the same full-body animal, Well Done! speech bubble and animation as the phonics games. Add four roses-only animals: frog, flamingo, peacock and butterfly. The first maths win in a visit introduces one of those; later wins mix the garden-only and familiar pools equally. Never repeat the previous maths celebration. Keep the garden-only animals out of both phonics games. Respect reduced-motion settings and offer Play again and All games.
+No introductory mode chooser, explanation cards or extra instruction screen. No Next button after correct answers. After the tenth correct answer, use the same full-body animal, Well Done! speech bubble and animation as the phonics games. Add four roses-only animals: frog, flamingo, peacock and butterfly. The first maths win in a visit introduces one of those. Later wins have a 20% chance of a rare unicorn: Rose, Lavender, Rainbow or Starlight, all exclusive to this game. On the remaining 80% of wins, mix the existing garden-only and familiar pools equally. Unicorns use the same Well Done! animation, with their name in the greeting. Never repeat the previous maths celebration. Keep the garden-only animals out of both phonics games. Respect reduced-motion settings and offer Play again and All games.
 
 Only the latest completed maths round's mode and independent-answer count are saved on the device. The grown-ups guide shows and clears that summary. Play must still work if storage is unavailable. Phonics round state remains in memory.
 

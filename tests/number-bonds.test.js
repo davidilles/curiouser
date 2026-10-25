@@ -51,3 +51,17 @@ test('recall, visual help and practice produce honest independent-answer counts'
     assert.equal(r.independent+r.supported,10);
   }
 });
+
+test('round mistake count survives question changes and resets on a new round', () => {
+  let r=createMathRound('practice');
+  assert.equal(r.mistakeCount,0);
+  r=helpMath(r);assert.equal(r.mistakeCount,0);
+  const q=r.questions[0],wrong=(q.answer+1)%11;
+  r=answerMath(r,wrong);assert.equal(r.mistakeCount,1);
+  r=answerMath(r,wrong);assert.equal(r.mistakeCount,1);
+  r=nextMath(answerMath(r,q.answer));
+  assert.deepEqual(r.mistakes,[]);assert.equal(r.mistakeCount,1);
+  while(r.status!=='won')r=nextMath(answerMath(r,r.questions[r.index].answer));
+  assert.equal(r.mistakeCount,1);
+  assert.equal(createMathRound().mistakeCount,0);
+});

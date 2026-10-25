@@ -24,8 +24,8 @@ export const CELEBRATION_FRIENDS = [
 
 export const WONDERLAND_CHANCE = 0.2;
 
-export function chooseCelebrationFriend(previousId = null, random = Math.random) {
-  const special = random() < WONDERLAND_CHANCE;
+export function chooseCelebrationFriend(previousId = null, random = Math.random, mistakeFree = true) {
+  const special = mistakeFree && random() < WONDERLAND_CHANCE;
   const choices = CELEBRATION_FRIENDS.filter((friend) => friend.special === special && friend.id !== previousId);
   return choices[Math.floor(random() * choices.length)];
 }
@@ -39,16 +39,30 @@ export const GARDEN_FRIENDS = [
   ["garden-butterfly", "butterfly", [650, 646, 604, 604]],
 ].map(([id, name, bounds]) => ({ id, name, bounds, size: 1254,
   image: "./assets/celebration/garden-friends.png", special: false, gardenOnly: true }));
-export const MATH_CELEBRATION_FRIENDS = [...CELEBRATION_FRIENDS, ...GARDEN_FRIENDS];
+// Rare visitors belong only to the roses game, just as the Wonderland draw
+// makes a phonics win feel special. Keep the original artwork unedited.
+export const UNICORN_FRIENDS = [
+  ["rose-unicorn", "the Rose Unicorn", 0],
+  ["lavender-unicorn", "the Lavender Unicorn", 1],
+  ["rainbow-unicorn", "the Rainbow Unicorn", 2],
+  ["starlight-unicorn", "the Starlight Unicorn", 3],
+].map(([id, name, cell]) => ({ id, name, cell, columns: 2,
+  image: "./assets/celebration/unicorn-friends.png", special: true, gardenOnly: true, unicorn: true }));
+export const UNICORN_CHANCE = 0.2;
+export const MATH_CELEBRATION_FRIENDS = [...CELEBRATION_FRIENDS, ...GARDEN_FRIENDS, ...UNICORN_FRIENDS];
 
-export function chooseMathCelebrationFriend(previousId = null, random = Math.random) {
-  // Introduce a garden friend on the first win, then mix exclusive and familiar
-  // friends equally. Never repeat the previous maths celebration.
+export function chooseMathCelebrationFriend(previousId = null, random = Math.random, mistakeFree = true) {
+  // Preserve the first-win garden welcome. Later wins have one 20% unicorn
+  // draw; the remaining wins use the existing garden/familiar mix.
+  if (mistakeFree && previousId && random() < UNICORN_CHANCE) {
+    const choices = UNICORN_FRIENDS.filter(friend => friend.id !== previousId);
+    return choices[Math.floor(random() * choices.length)];
+  }
   if (!previousId || random() < .5) {
     const choices = GARDEN_FRIENDS.filter(friend => friend.id !== previousId);
     return choices[Math.floor(random() * choices.length)];
   }
-  return chooseCelebrationFriend(previousId, random);
+  return chooseCelebrationFriend(previousId, random, mistakeFree);
 }
 
 export function celebrationStyle(friend) {
@@ -56,7 +70,9 @@ export function celebrationStyle(friend) {
     const [x, y, w, h] = friend.bounds;
     return `background-image:url('${friend.image}');background-size:${friend.size / w * 100}% ${friend.size / h * 100}%;background-position:${x / (friend.size - w) * 100}% ${y / (friend.size - h) * 100}%`;
   }
-  return `background-image:url('${friend.image}');background-position:${friend.cell % 3 * 50}% ${Math.floor(friend.cell / 3) * 50}%`;
+  const columns = friend.columns ?? 3;
+  const step = 100 / (columns - 1);
+  return `background-image:url('${friend.image}');background-size:${columns * 100}% ${columns * 100}%;background-position:${friend.cell % columns * step}% ${Math.floor(friend.cell / columns) * step}%`;
 }
 
 // One celebration component keeps the speech bubble, entrance animation and
